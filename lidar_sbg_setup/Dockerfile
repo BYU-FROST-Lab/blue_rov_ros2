@@ -25,7 +25,7 @@ RUN apt-get update && apt-get install -y \
 
 RUN mkdir -p /root/ros2_ws/src
 
-
 # --- Source ROS2 ---
 RUN echo "source /opt/ros/${ROS_DISTRO}/setup.bash" >> ~/.bashrc 
-
+    
+WORKDIR /root/ros2_ws
