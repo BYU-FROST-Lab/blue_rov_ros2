@@ -39,7 +39,7 @@ def generate_launch_description():
         launch_arguments={
             'params_file': ouster_config,
             'ouster_ns': '',
-            'os_driver_name': 'ouster_driver',
+            'os_driver_name': 'os_driver',
             'viz': 'False'
         }.items()
     )
