@@ -7,7 +7,7 @@ services:
     container_name: ouster_lidar_sbg
     privileged: true # Allows access to devices
     volumes:
-      - ../bags:/root/bags:rw
+      - ../bags:/root/bags:rshared
       - ../config:/root/config/:rw
       - /dev:/dev:rw # Mounts the device directory to allow access to devices
       - ../packages:/root/ros2_ws/src:rw
