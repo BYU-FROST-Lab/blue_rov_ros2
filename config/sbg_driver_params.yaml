@@ -14,7 +14,7 @@
       #       output frequency.
       #       The frequency can be reduced in order to reduce CPU consumption but
       #       it can lead to miss data frame and less accurate time stamping.
-      frequency: 400  # WAS 400
+      frequency: 500  # WAS 400
 
     odometry:
       # Enable ROS odometry messages.
@@ -33,8 +33,9 @@
       # Port Name
       portName: "/dev/ttyUSB0" # TODO check this
 
+      # Can I bump the baud rate?
       # Baude rate (4800 ,9600 ,19200 ,38400 ,115200 [default],230400 ,460800 ,921600)
-      baudRate: 230400  # TODO check this
+      baudRate: 921600  # TODO check this
 
       # Port Id
       # 0 PORT_A: Main communication interface. Full duplex.
@@ -47,9 +48,9 @@
     # Sensor Parameters
     sensorParameters:
       # Initial latitude (°)
-      initLat: 48.419727  # TODO set this to BYU CAMPUS
+      initLat: 40.2484  # TODO set this to BYU CAMPUS
       # Initial longitude (°)
-      initLong: -4.472119
+      initLong: -111.617
       # Initial altitude (above WGS84 ellipsoid) (m)
       initAlt: 100.0
       # Year at startup
@@ -57,7 +58,7 @@
       # month in year at startup
       month: 12
       # day in month at startup
-      day: 18
+      day: 26
 
       # Montion profile ID
       # 1 GENERAL_PURPOSE Should be used as a default when other profiles do not apply
@@ -271,15 +272,15 @@
       frame_id: "imu_link"
 
       # Status general, clock, com aiding, solution, heave
-      log_status: 8
+      log_status: 0
       # Includes IMU status, acc., gyro, temp delta speeds and delta angles values
       log_imu_data: 1
       # Includes roll, pitch, yaw and their accuracies on each axis
       log_ekf_euler: 0
       # Includes the 4 quaternions values
-      log_ekf_quat: 8
+      log_ekf_quat: 1
       # Position and velocities in NED coordinates with the accuracies on each axis
-      log_ekf_nav: 8
+      log_ekf_nav: 0
       # Velocity expressed in the INS body/vehicle frame
       log_ekf_vel_body: 0
       # Rotations rate and accelerations in the INS body/vehicle frame
@@ -291,7 +292,7 @@
       # Provides UTC time reference
       log_utc_time: 40
       # Magnetic data with associated accelerometer on each axis
-      log_mag: 1
+      log_mag: 0
       # Magnetometer calibration data (raw buffer)
       log_mag_calib: 0
       # GPS velocities from primary or secondary GPS receiver
@@ -312,7 +313,7 @@
       # Air data
       log_air_data: 0
       # Short IMU data
-      log_imu_short: 0
+      log_imu_short: 1
 
 
     nmea:
