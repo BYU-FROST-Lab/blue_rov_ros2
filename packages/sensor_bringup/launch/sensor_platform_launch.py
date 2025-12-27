@@ -68,6 +68,6 @@ def generate_launch_description():
             namespace=LaunchConfiguration('namespace'),
             parameters=[ntrip_config],
         ),
-		driver_launch
+		# driver_launch
 		
 	])
