@@ -13,11 +13,11 @@
 #   Time sync status is referenced to the first topic received by the callback function.
 topics:
   # Inertial Sense IMU/GPS
-  - name: /sbg/imu/data
+  - name: /imu/data
     type: sensor_msgs/msg/Imu
 
   # Ouster LiDARs
-  - name: /ouster/points
+  - name: /points
     type: sensor_msgs/msg/PointCloud2
 
   # # Cameras
