@@ -280,7 +280,7 @@
       # Includes the 4 quaternions values
       log_ekf_quat: 1
       # Position and velocities in NED coordinates with the accuracies on each axis
-      log_ekf_nav: 0
+      log_ekf_nav: 10
       # Velocity expressed in the INS body/vehicle frame
       log_ekf_vel_body: 0
       # Rotations rate and accelerations in the INS body/vehicle frame
@@ -292,7 +292,7 @@
       # Provides UTC time reference
       log_utc_time: 40
       # Magnetic data with associated accelerometer on each axis
-      log_mag: 0
+      log_mag: 4
       # Magnetometer calibration data (raw buffer)
       log_mag_calib: 0
       # GPS velocities from primary or secondary GPS receiver

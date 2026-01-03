@@ -19,6 +19,8 @@ topics:
   # Ouster LiDARs
   - name: /points
     type: sensor_msgs/msg/PointCloud2
+  - name: /imu
+    type: sensor_msgs/msg/Imu
 
   # # Cameras
   # - name: /camera/image_raw
