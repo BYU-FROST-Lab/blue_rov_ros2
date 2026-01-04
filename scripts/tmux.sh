@@ -40,11 +40,9 @@ tmux send-keys -t ${SESSION_NAME}:0.1 \
 tmux send-keys -t ${SESSION_NAME}:0.2 \
   "docker exec -it ${CONTAINER} bash" C-m
 tmux send-keys -t ${SESSION_NAME}:0.2 \
-  "colcon build" C-m
-tmux send-keys -t ${SESSION_NAME}:0.2 \
   "clear" C-m
 tmux send-keys -t ${SESSION_NAME}:0.2 \
-  "ros2 launch sensor_bringup ntrip_launch.py" 
+  "colcon build" 
 
 ########################
 # Window 1: empty

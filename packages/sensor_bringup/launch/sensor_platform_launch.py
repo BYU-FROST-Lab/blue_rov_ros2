@@ -61,13 +61,13 @@ def generate_launch_description():
 			namespace=LaunchConfiguration('namespace'),
 			parameters=[nmea_config]
         ),
-		# Node(
-        #     package='ntrip_client',
-        #     executable='ntrip_ros.py',
-        #     name='ntrip_client',
-        #     namespace=LaunchConfiguration('namespace'),
-        #     parameters=[ntrip_config],
-        # ),
+		Node(
+            package='ntrip_client',
+            executable='ntrip_ros.py',
+            name='ntrip_client',
+            namespace=LaunchConfiguration('namespace'),
+            parameters=[ntrip_config],
+        ),
 		# driver_launch
 		
 	])
