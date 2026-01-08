@@ -1,5 +1,21 @@
 repositories:
-  nmea_gpsd:
+  time_sync_utils:
     type: git
-    url: git@github.com:BYU-FRoSt-Lab/nmea_gpsd.git
+    url: https://github.com/BYU-FRoSt-Lab/time_sync_utils.git
     version: main
+  dvl-a50:
+    type: git
+    url: https://github.com/paagutie/dvl-a50.git
+    version: master
+  dvl-msgs:
+    type: git
+    url: https://github.com/paagutie/dvl_msgs.git
+    version: master
+  pressure_sensor_ros2:
+    type: git
+    url: https://github.com/BYU-FRoSt-Lab/pressure_sensor_ros2.git
+    version: main
+  # seatrac:
+  #   type: git
+  #   url: https://github.com/BYU-FRoSt-Lab/seatrac-ros2.git
+  #   version: main
