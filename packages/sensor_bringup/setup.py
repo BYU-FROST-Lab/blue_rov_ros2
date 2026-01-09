@@ -28,6 +28,7 @@ setup(
     },
     entry_points={
         'console_scripts': [
+            'dvl_converter = sensor_bringup.dvl_converter:main',
         ],
     },
 )
