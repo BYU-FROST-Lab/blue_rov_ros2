@@ -1,0 +1,18 @@
+SBG DRIVER [Mag Calib]
+======= Parameters =======
+* CALIB_MODE = Mode 3D
+* CALIB_BW = High Bandwidth
+======= Results =======
+Quality: optimal
+Confidence: high
+======= Infos =======
+* Used points : 1000/1000
+* Mean, Std, Max
+[Before]	0.089018	1.41315	4.27401
+[After]	0.00436199	0.938282	3.30134
+[Accuracy]	0.302499	0.83758	2.19084
+* Offset	0.812627	-0.885258	0.0907264
+* Matrix
+0.810652	-0.0157337	-0.00393199
+-0.0145557	0.798441	0.000243237
+-0.0112873	0.0110831	0.801619
