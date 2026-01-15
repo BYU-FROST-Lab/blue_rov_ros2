@@ -19,14 +19,12 @@ class DVLToTwist(Node):
         self.declare_parameter('frame_id', 'dvl_link')
         self.frame_id = self.get_parameter('frame_id').value
 
-        # Sensor-data QoS (equivalent to rmw_qos_profile_sensor_data in rclcpp)
-        sensor_qos = QoSProfile(**qos_profile_sensor_data.__dict__)
 
         self.sub = self.create_subscription(
             DVL,
             'dvl/data',
             self.dvl_callback,
-            sensor_qos
+            qos_profile_sensor_data
         )
 
         self.pub = self.create_publisher(
