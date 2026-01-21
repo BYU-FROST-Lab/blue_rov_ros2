@@ -17,10 +17,6 @@ class DVLToTwist(Node):
     def __init__(self):
         super().__init__('dvl_to_twist')
 
-        # TODO if we want control of frame id 
-        self.declare_parameter('frame_id', 'dvl_link')
-        self.frame_id = self.get_parameter('frame_id').value
-
 
         self.sub = self.create_subscription(
             DVL,
@@ -57,7 +53,7 @@ class DVLToTwist(Node):
 
         # ---------- Header ----------
         odom.header.frame_id = 'map'
-        odom.child_frame_id = self.frame_id
+        odom.child_frame_id = msg.header.frame_id
 
         # DVLDR time is float64 seconds
         sec = int(msg.time)

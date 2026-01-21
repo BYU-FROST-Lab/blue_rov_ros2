@@ -322,9 +322,9 @@
       # Topic on which to publish nmea data
       topic_name: nmea
       # Namespace where to publish topic
-      namespace: ""
+      namespace: "/bluerov2"
 
     rtcm:
       subscribe: true  # Set to true to enable RTCM subscription
       topic_name: rtcm   # The name of the RTCM topic to subscribe to
-      namespace: "" # The namespace where the RTCM topic is published
+      namespace: "/bluerov2" # The namespace where the RTCM topic is published

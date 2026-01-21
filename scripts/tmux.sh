@@ -23,6 +23,10 @@ tmux split-window -v -t ${SESSION_NAME}:0.0
 # Top-left pane
 tmux send-keys -t ${SESSION_NAME}:0.0 \
   "docker exec -it ${CONTAINER} bash" C-m
+tmux send-keys -t ${SESSION_NAME}:0.2 \
+  "colcon build" C-m
+tmux send-keys -t ${SESSION_NAME}:0.2 \
+  "source install/setup.bash" C-m
 tmux send-keys -t ${SESSION_NAME}:0.0 \
   "clear" C-m
 tmux send-keys -t ${SESSION_NAME}:0.0 \
@@ -42,7 +46,7 @@ tmux send-keys -t ${SESSION_NAME}:0.2 \
 tmux send-keys -t ${SESSION_NAME}:0.2 \
   "clear" C-m
 tmux send-keys -t ${SESSION_NAME}:0.2 \
-  "colcon build" 
+  "ros2 topic list" 
 
 ########################
 # Window 1: empty
