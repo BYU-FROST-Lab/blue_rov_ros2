@@ -40,13 +40,6 @@ bluerov2: # Change this to match the vehicle name
   #     origin.longitude: -111.742249 # -111.7126 for Utah Lake
   #     origin.altitude: 1367.00 # from testing
 
-  dvl_a50_node:
-    ros__parameters:
-      dvl_ip_address: "192.168.2.95"
-      velocity_frame_id: "bluerov2/dvl_link"
-      position_frame_id: "bluerov2/dvl_link"
-
-      
   shallow:
     pressure_pub:
       ros__parameters:

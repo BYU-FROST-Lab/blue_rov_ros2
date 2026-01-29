@@ -1,11 +1,13 @@
 import launch
 import launch_ros.actions
 import launch_ros.descriptions
-from launch.actions import DeclareLaunchArgument
+from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
 from launch.substitutions import LaunchConfiguration
+from launch.conditions import IfCondition, UnlessCondition
 
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from ament_index_python.packages import get_package_share_directory
+
 
 import os
 
@@ -33,6 +35,18 @@ def generate_launch_description():
         'config',
         'nmea_gpsd_params.yaml'
     )
+    dvl_a50_config = os.path.join(
+        '/home',
+        'frostlab',
+        'config',
+        'dvl_params.yaml'
+    )
+
+    dvl_launch = os.path.join(
+        get_package_share_directory('dvl_a50'),
+        'launch',
+        'dvl_a50_launch.py'
+    )
 
     sim = "false"  # Default to 'false'
     GPS = "false"  # Default to 'false'
@@ -48,19 +62,16 @@ def generate_launch_description():
 
     launch_actions.extend([
         DeclareLaunchArgument('namespace', default_value='bluerov2'),
-        launch_ros.actions.Node(
-            package='dvl_a50', 
-            executable='dvl_a50_sensor', 
-            name='dvl_a50_node',
-            parameters=[param_file],
-            namespace=LaunchConfiguration('namespace'),
-        ),
-        launch_ros.actions.Node(
-            package='sensor_bringup', 
-            executable='dvl_converter', 
-            name='dvl_to_twist_node',
-            parameters=[param_file],
-            namespace=LaunchConfiguration('namespace'),
+        DeclareLaunchArgument(
+                "use_sim_time",
+                default_value="false",
+                description="Use simulation clock if true and  don't launch sensor drivers",
+            ),
+        IncludeLaunchDescription(
+            PythonLaunchDescriptionSource(dvl_launch),
+            launch_arguments={
+                'params_file': dvl_a50_config,
+            }.items()
         ),
 
         # launch_ros.actions.Node(
@@ -110,6 +121,7 @@ def generate_launch_description():
             parameters=[param_file],
             namespace=[LaunchConfiguration('namespace'), '/shallow'],
             output=output,
+            condition=UnlessCondition(LaunchConfiguration('use_sim_time')),
         ),
         launch_ros.actions.Node(
             package='pressure_sensor', 
@@ -126,6 +138,7 @@ def generate_launch_description():
             parameters=[param_file],
             namespace=[LaunchConfiguration('namespace'), '/deep'],
             output=output,
+            condition=UnlessCondition(LaunchConfiguration('use_sim_time')),
         ),
         launch_ros.actions.Node(
             package='pressure_sensor', 
@@ -134,14 +147,14 @@ def generate_launch_description():
             parameters=[param_file],
             namespace=[LaunchConfiguration('namespace'), '/deep'],
         ),
-
         launch_ros.actions.Node(
             package='sbg_driver',
         #	name='sbg_device_1',
             executable = 'sbg_device',
             output = 'screen',
             namespace=LaunchConfiguration('namespace'),
-            parameters = [sbg_config]
+            parameters = [sbg_config],
+            condition=UnlessCondition(LaunchConfiguration('use_sim_time')),
         ),
         launch_ros.actions.Node(
             package='nmea_gpsd',
@@ -156,6 +169,7 @@ def generate_launch_description():
             name='ntrip_client',
             namespace=LaunchConfiguration('namespace'),
             parameters=[ntrip_config],
+            condition=UnlessCondition(LaunchConfiguration('use_sim_time')),
         ),
 
 
