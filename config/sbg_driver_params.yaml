@@ -169,13 +169,13 @@
       gnss_model_id: 101
     
       #GNSS primary antenna lever arm in IMU X axis (m)
-      primaryLeverArmX: -0.07
+      primaryLeverArmX: -0.1177
       #GNSS primary antenna lever arm in IMU Y axis (m)
-      primaryLeverArmY: 0.1
+      primaryLeverArmY: 0.20723
       #GNSS primary antenna lever arm in IMU Z axis (m)
-      primaryLeverArmZ: 0.05
+      primaryLeverArmZ: -0.40019
       #GNSS primary antenna precise. Set to true if the primary lever arm has been accurately entered and doesn't need online re-estimation.
-      primaryLeverPrecise: false   # TODO check this in the cad
+      primaryLeverPrecise: true  
     
       #GNSS secondary antenna lever arm in IMU X axis (m)
       secondaryLeverArmX: 0.5
@@ -280,7 +280,7 @@
       # Includes the 4 quaternions values
       log_ekf_quat: 1
       # Position and velocities in NED coordinates with the accuracies on each axis
-      log_ekf_nav: 8
+      log_ekf_nav: 4
       # Velocity expressed in the INS body/vehicle frame
       log_ekf_vel_body: 0
       # Rotations rate and accelerations in the INS body/vehicle frame

@@ -4,3 +4,6 @@
     relative_path: false
     sync_threshold_warn_seconds: 0.2
     sync_threshold_error_seconds: 1.0
+
+    # TODO continous mode
+    # TODO length of checking 

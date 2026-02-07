@@ -30,10 +30,13 @@ topics:
   - name: /bluerov2/imu/nav_sat_fix
     type: sensor_msgs/msg/NavSatFix
 
+  - name: /bluerov2/imu/mag
+    type: sensor_msgs/msg/MagneticField
+
   # TODO add MAG
 
-  # - name: /dvl/twist
-  #   type: geometry_msgs/msg/TwistWithCovarianceStamped
+  - name: /bluerov2/dvl/twist
+    type: geometry_msgs/msg/TwistWithCovarianceStamped
   
   - name: /bluerov2/deep/depth_data
     type: nav_msgs/msg/Odometry
