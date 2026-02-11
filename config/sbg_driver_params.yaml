@@ -22,9 +22,9 @@
       # Publish odometry transforms.
       publishTf: false
       # Odometry frame IDs.
-      odomFrameId: "map"
+      odomFrameId: "sbg_odom"
       baseFrameId: "bluerov2/imu_link"
-      initFrameId: "map"
+      initFrameId: "sbg_odom"
 
     # Configuration of the device with ROS.
     confWithRos: true

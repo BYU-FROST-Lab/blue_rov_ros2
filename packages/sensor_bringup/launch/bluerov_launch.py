@@ -70,13 +70,13 @@ def generate_launch_description():
         #     namespace=LaunchConfiguration('namespace'),
         #     output=output,
         # ),
-        # launch_ros.actions.Node(
-        #     package='mavlink_bridge',
-        #     executable='mavlink_bridge',
-        #     parameters=[param_file],
-        #     namespace=LaunchConfiguration('namespace'),
-        #     output=output,
-        # ),
+        launch_ros.actions.Node(
+            package='mavlink_bridge',
+            executable='mavlink_bridge',
+            parameters=[param_file],
+            namespace=LaunchConfiguration('namespace'),
+            output=output,
+        ),
         # # Setup the USBL modem
         # launch_ros.actions.Node(
         #     package='seatrac',
