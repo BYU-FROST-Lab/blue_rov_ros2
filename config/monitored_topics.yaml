@@ -44,5 +44,18 @@ topics:
   - name: /bluerov2/shallow/depth_data
     type: nav_msgs/msg/Odometry
 
-  - name: /bluerov2/dvl/odometry
+  - name: /bluerov2/dvl/odom
     type: nav_msgs/msg/Odometry
+
+  # - name: /mavros/imu/data
+  #   type: sensor_msgs/msg/Imu
+  #   qos:
+  #     history_depth: 10
+  #     reliability: best_effort
+  #     durability: volatile
+
+  - name: /bluerov2/deep/pressure/data
+    type: sensor_msgs/msg/FluidPressure
+
+  - name: /bluerov2/battery/status
+    type: sensor_msgs/msg/BatteryState
