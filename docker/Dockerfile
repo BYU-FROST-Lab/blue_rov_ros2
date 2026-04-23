@@ -19,6 +19,7 @@ RUN apt-get update && apt-get install -y \
     # ros-${ROS_DISTRO}-sbg-driver \
     ros-${ROS_DISTRO}-ntrip-client \
     ros-${ROS_DISTRO}-rosbag2-storage-mcap \
+    ros-${ROS_DISTRO}-mavros-msgs \
     python3-pip \
     && rm -rf /var/lib/apt/lists/*
 
@@ -48,6 +49,7 @@ RUN mkdir -p /root/ros2_ws/src
 RUN pip3 install \
     smbus2 \
     pymavlink \
+    scipy \
     --no-cache-dir
     
 USER ${LABNAME}

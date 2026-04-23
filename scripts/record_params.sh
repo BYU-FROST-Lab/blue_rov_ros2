@@ -46,6 +46,18 @@ TOPICS_EXTRA=" \
 /rtcm \
 /tf_static"
 
+TOPICS_IMU=" \
+/bluerov2/sbg/ekf_quat \
+/bluerov2/sbg/ekf_nav \
+/bluerov2/sbg/imu_data \
+/bluerov2/sbg/imu_short \
+/bluerov2/sbg/utc_time \
+/bluerov2/sbg/mag \
+/bluerov2/imu/data \
+/bluerov2/imu/mag \
+/bluerov2/sbg/mag \
+"
+
 # -----------------------------
 # Default topics (used if no -p or -t)
 # -----------------------------
