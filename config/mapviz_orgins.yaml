@@ -1,0 +1,10 @@
+- name: byu
+  latitude: 40.2497218
+  longitude: -111.649276
+  altitude: 1376.0
+  heading: 0.0
+- name: ul
+  latitude: 40.2735
+  longitude: -111.7126
+  altitude: 1367.0
+  heading: 0.0
