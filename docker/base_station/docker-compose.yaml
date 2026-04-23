@@ -9,13 +9,15 @@ services:
     container_name: bluerov_base
     privileged: true # Allows access to devices
     volumes:
-      - ../bags:/home/frostlab/bags:rshared
-      - ../config:/home/frostlab/config/:rw
+      - ../../bags:/home/frostlab/bags:rshared
+      - ../../config:/home/frostlab/config/:rw
       - /dev:/dev:rw # Mounts the device directory to allow access to devices
-      - ../packages:/home/frostlab/ros2_ws/src:rw
+      - ../../packages:/home/frostlab/ros2_ws/src:rw
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw # Mounts the X11 socket for GUI applications
       # - ./entrypoint.sh:/entrypoint.sh:rw # Custom entrypoint script
     environment:
       RCUTILS_COLORIZED_OUTPUT: 1 # Allows launch files to print colored text
+      DISPLAY: ${DISPLAY} # Forward the display for GUI applications
     stdin_open: true # Keeps the container running even if it's not attached to a terminal. 
     tty: true # outuputs the terminal for the container, allowing you to interact with it.
     network_mode: host # Uses the host's network stack, which is useful for ROS

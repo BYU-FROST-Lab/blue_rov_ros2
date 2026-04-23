@@ -5,7 +5,7 @@ repositories:
     version: main
   dvl-a50:
     type: git
-    url: https://github.com/paagutie/dvl-a50.git
+    url: https://github.com/BradenMeyers/dvl-a50.git
     version: master
   dvl-msgs:
     type: git

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SESSION_NAME=ros2
-CONTAINER="bluerov_ros2"
+CONTAINER="bluerov_base"
 
 # Start a new detached session
 tmux new-session -d -s ${SESSION_NAME}
@@ -25,16 +25,25 @@ tmux split-window -h -t ${SESSION_NAME}:0
 tmux send-keys -t ${SESSION_NAME}:0.0 \
   "cockpit" 
 tmux send-keys -t ${SESSION_NAME}:0.1 \
-  "clear" C-m
-tmux send-keys -t ${SESSION_NAME}:0.1 \
   "bash base_scripts/sync_bags.sh -i 192.168.2.103 -d <FOLDER_NAME>"
 
 
 ########################
 # Window 1: empty
 ########################
-tmux new-window -t ${SESSION_NAME} -n monitor
+tmux new-window -t ${SESSION_NAME} -n ros2
 
+xhost + # Allow connections from any host (for X11 forwarding)
+tmux send-keys -t ${SESSION_NAME}:1.0 \
+  "docker exec -it ${CONTAINER} bash" C-m
+tmux send-keys -t ${SESSION_NAME}:1.0 \
+  "colcon build" C-m
+tmux send-keys -t ${SESSION_NAME}:1.0 \
+  "source install/setup.bash" C-m
+# tmux send-keys -t ${SESSION_NAME}:1.0 \
+#   "clear" C-m
+tmux send-keys -t ${SESSION_NAME}:1.0 \
+  "ros2 launch sensor_bringup base_station_launch.py" 
 
 
 
