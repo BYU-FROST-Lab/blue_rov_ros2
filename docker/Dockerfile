@@ -57,6 +57,7 @@ USER ${LABNAME}
 
 # --- Source ROS2 ---
 RUN echo "source /opt/ros/${ROS_DISTRO}/setup.bash" >> ~/.bashrc \
-    && echo "source ~/ros2_ws/install/setup.bash" >> ~/.bashrc
+    && echo "source ~/ros2_ws/install/setup.bash" >> ~/.bashrc \
+    && echo "source ~/config/env.sh" >> ~/.bashrc
     
 WORKDIR /home/${LABNAME}/ros2_ws
