@@ -20,8 +20,6 @@ def generate_launch_description():
   
     return LaunchDescription([
         # Set environment variable
-        SetEnvironmentVariable('ROSCONSOLE_FORMAT', '[${thread}] [${node}/${function}:${line}]: ${message}'),
-
         # Declare launch arguments
         DeclareLaunchArgument('print_profile_data', default_value='false'),
         DeclareLaunchArgument('origin', default_value='ul'),
