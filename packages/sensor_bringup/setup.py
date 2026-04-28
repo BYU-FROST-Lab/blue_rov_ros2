@@ -13,6 +13,8 @@ setup(
             ['resource/' + package_name]),
         (os.path.join('share', package_name, 'launch'),
             glob(os.path.join('launch', '*launch.py'))),
+        (os.path.join('share', package_name, 'urdf'),
+            glob(os.path.join('urdf', '*.xacro'))),
         ('share/' + package_name, ['package.xml']),
     ],
     install_requires=['setuptools'],
@@ -33,6 +35,7 @@ setup(
             'odom_anchor = sensor_bringup.odom_anchor:main',
             'dummy_imu_odom_name = sensor_bringup.dummy_imu_odom_name:main',
             'odom_to_navsat = sensor_bringup.odom_to_navsat:main',
+            'sbg_odom_tf = sensor_bringup.sbg_odom_tf:main',
         ],
     },
 )

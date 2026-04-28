@@ -22,7 +22,7 @@ def generate_launch_description():
         # Set environment variable
         # Declare launch arguments
         DeclareLaunchArgument('print_profile_data', default_value='false'),
-        DeclareLaunchArgument('origin', default_value='ul'),
+        DeclareLaunchArgument('origin', default_value='bluerov_site'),
 
         LogInfo(msg=['Config file path: ', config_path]),
 
@@ -42,7 +42,7 @@ def generate_launch_description():
             package='swri_transform_util',
             executable='initialize_origin.py',
             name='initialize_origin',
-            remappings=[('/fix', '/ins/lla')],
+            remappings=[('/fix', '/bluerov2/imu/nav_sat_fix')],
             parameters=[
                 {'local_xy_frame': '/map'},
                 {'local_xy_origin': LaunchConfiguration('origin')},

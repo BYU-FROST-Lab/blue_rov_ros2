@@ -19,12 +19,13 @@
     odometry:
       # Enable ROS odometry messages.
       enable: true
-      # Publish odometry transforms.
+      # Publish odometry transforms (disabled — sbg_odom_tf node handles TF).
       publishTf: false
       # Odometry frame IDs.
-      odomFrameId: "sbg_odom"
+      odomFrameId: "odom" # TODO maybe need to change back to sbg_odom
       baseFrameId: "bluerov2/imu_link"
-      initFrameId: "sbg_odom"
+      initFrameId: "map"  # TODO not sure what this is doing. 
+      # datumLat/Lon/Alt are NOT set here — injected from vehicle_params.yaml by bluerov_launch.py.
 
     # Configuration of the device with ROS.
     confWithRos: true

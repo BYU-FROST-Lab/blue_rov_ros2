@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<robot name="bluerov2" xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <!-- BlueROV2 base body -->
+  <link name="bluerov2/base_link">
+    <visual>
+      <geometry>
+        <box size="0.45 0.34 0.11"/>
+      </geometry>
+      <material name="blue">
+        <color rgba="0.0 0.2 0.8 1.0"/>
+      </material>
+    </visual>
+    <inertial>
+      <mass value="10.0"/>
+      <inertia ixx="0.1" ixy="0" ixz="0" iyy="0.1" iyz="0" izz="0.1"/>
+    </inertial>
+  </link>
+
+  <!-- SBG Ellipse IMU — update xyz offset once measured on vehicle -->
+  <joint name="base_to_imu" type="fixed">
+    <parent link="bluerov2/base_link"/>
+    <child link="bluerov2/imu_link"/>
+    <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
+  </joint>
+  <link name="bluerov2/imu_link">
+    <visual>
+      <geometry><box size="0.05 0.04 0.02"/></geometry>
+      <material name="grey"><color rgba="0.5 0.5 0.5 1.0"/></material>
+    </visual>
+  </link>
+
+  <!-- Water Linked DVL-A50 — mounted below, update xyz offset -->
+  <joint name="base_to_dvl" type="fixed">
+    <parent link="bluerov2/base_link"/>
+    <child link="bluerov2/dvl_link"/>
+    <origin xyz="0.0 0.0 -0.06" rpy="0 0 0"/>
+  </joint>
+  <link name="bluerov2/dvl_link">
+    <visual>
+      <geometry><cylinder radius="0.04" length="0.03"/></geometry>
+      <material name="dark_grey"><color rgba="0.3 0.3 0.3 1.0"/></material>
+    </visual>
+  </link>
+
+  <!-- Pressure sensors — shared mount point, update offsets -->
+  <joint name="base_to_pressure" type="fixed">
+    <parent link="bluerov2/base_link"/>
+    <child link="bluerov2/pressure_link"/>
+    <origin xyz="0.1 0.0 0.0" rpy="0 0 0"/>
+  </joint>
+  <link name="bluerov2/pressure_link"/>
+
+  <!-- Water Linked Sonar 3D-15 — update offset once mounted -->
+  <joint name="base_to_sonar" type="fixed">
+    <parent link="bluerov2/base_link"/>
+    <child link="bluerov2/sonar_link"/>
+    <origin xyz="0.2 0.0 0.0" rpy="0 0 0"/>
+  </joint>
+  <link name="bluerov2/sonar_link">
+    <visual>
+      <geometry><cylinder radius="0.03" length="0.05"/></geometry>
+      <material name="black"><color rgba="0.1 0.1 0.1 1.0"/></material>
+    </visual>
+  </link>
+
+</robot>

@@ -8,8 +8,9 @@ from launch.conditions import IfCondition, UnlessCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from ament_index_python.packages import get_package_share_directory
 
-
 import os
+import yaml
+from launch.substitutions import Command
 
 def generate_launch_description():
     '''
@@ -17,6 +18,23 @@ def generate_launch_description():
 
     :return: The launch description.
     '''
+    vehicle_params_path = '/home/frostlab/config/vehicle_params.yaml'
+    with open(vehicle_params_path) as f:
+        _vp = yaml.safe_load(f)
+    _origin = _vp['/**']['ros__parameters']['origin']
+    sbg_datum = {
+        'odometry.datumLat': float(_origin['latitude']),
+        'odometry.datumLon': float(_origin['longitude']),
+        'odometry.datumAlt': float(_origin['altitude']),
+    }
+
+    urdf_path = os.path.join(
+        get_package_share_directory('sensor_bringup'),
+        'urdf',
+        'bluerov2.urdf.xacro'
+    )
+    robot_description = Command(['xacro ', urdf_path])
+
     sbg_config = os.path.join(
         '/home',
         'frostlab',
@@ -48,8 +66,6 @@ def generate_launch_description():
         'dvl_a50_launch.py'
     )
 
-    sim = "false"  # Default to 'false'
-    GPS = "false"  # Default to 'false'
     verbose = "false"  # Default to 'false'
     param_file = '/home/frostlab/config/vehicle_params.yaml'
 
@@ -96,21 +112,6 @@ def generate_launch_description():
         #     namespace=LaunchConfiguration('namespace'),
         #     output=output,
         # ),
-        # launch_ros.actions.Node(
-        #     package='cougars_coms',
-        #     executable='vehicle_pinger',
-        #     parameters=[param_file],
-        #     namespace=LaunchConfiguration('namespace'),
-        #     output=output,
-        # ),
-        
-        # launch_ros.actions.Node(
-        #     package='cougars_localization',
-        #     executable='nmea_constructor.py',
-        #     parameters=[param_file],
-        #     namespace=LaunchConfiguration('namespace'),
-        #     output=output,LaunchConfiguration
-        # ),
 
 
         ################ Pressure sensor #########
@@ -149,11 +150,10 @@ def generate_launch_description():
         ),
         launch_ros.actions.Node(
             package='sbg_driver',
-        #	name='sbg_device_1',
-            executable = 'sbg_device',
-            output = 'screen',
+            executable='sbg_device',
+            output='screen',
             namespace=LaunchConfiguration('namespace'),
-            parameters = [sbg_config],
+            parameters=[sbg_config, sbg_datum],
             condition=UnlessCondition(LaunchConfiguration('use_sim_time')),
         ),
         launch_ros.actions.Node(
@@ -172,6 +172,29 @@ def generate_launch_description():
             condition=UnlessCondition(LaunchConfiguration('use_sim_time')),
         ),
 
+        # Publish URDF static transforms (bluerov2/base_link -> sensor frames)
+        launch_ros.actions.Node(
+            package='robot_state_publisher',
+            executable='robot_state_publisher',
+            name='robot_state_publisher',
+            parameters=[{'robot_description': robot_description}],
+        ),
+
+        # Republish imu/odometry as odom -> bluerov2/base_link TF
+        launch_ros.actions.Node(
+            package='sensor_bringup',
+            executable='sbg_odom_tf',
+            name='sbg_odom_tf',
+            namespace=LaunchConfiguration('namespace'),
+        ),
+
+        # map -> odom identity (datum = map origin; separate frames for future EKF)
+        launch_ros.actions.Node(
+            package='tf2_ros',
+            executable='static_transform_publisher',
+            name='map_to_odom',
+            arguments=['0', '0', '0', '0', '0', '0', '1', 'map', 'odom'],
+        ),
 
     ])
 
