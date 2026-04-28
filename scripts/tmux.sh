@@ -32,13 +32,11 @@ tmux send-keys -t ${SESSION_NAME}:0.0 \
 tmux send-keys -t ${SESSION_NAME}:0.0 \
   "ros2 launch sensor_bringup bluerov_launch.py" 
 
-# # Bottom-left pane
-# tmux send-keys -t ${SESSION_NAME}:0.1 \
-#   "docker exec -it ${CONTAINER} bash" C-m
-#   tmux send-keys -t ${SESSION_NAME}:0.1 \
-#   "clear" C-m
-# tmux send-keys -t ${SESSION_NAME}:0.1 \
-#   "ros2 launch sensor_bringup lidar_launch.py" 
+# Bottom-left pane
+tmux send-keys -t ${SESSION_NAME}:0.1 \
+"clear" C-m
+tmux send-keys -t ${SESSION_NAME}:0.1 \
+  "gpspipe -r | nc -u 192.168.2.2 27000" 
 
 # Right pane
 tmux send-keys -t ${SESSION_NAME}:0.2 \
