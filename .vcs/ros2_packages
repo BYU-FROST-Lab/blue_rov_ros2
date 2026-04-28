@@ -19,6 +19,10 @@ repositories:
     type: git
     url: https://github.com/SBG-Systems/sbg_ros2_driver.git
     version: devel
+  sonar-3d-15:
+    type: git
+    url: https://github.com/waterlinked/Sonar-3D-15-ROS-driver.git
+    version: main
   # seatrac:
   #   type: git
   #   url: https://github.com/BYU-FRoSt-Lab/seatrac-ros2.git
