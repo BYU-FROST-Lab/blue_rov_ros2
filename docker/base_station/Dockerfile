@@ -12,6 +12,7 @@ RUN apt update && apt install -y \
     ros-${ROS_DISTRO}-tile-map \
     ros-${ROS_DISTRO}-multires-image \
     ros-${ROS_DISTRO}-rosapi \
+    ros-${ROS_DISTRO}-rviz2 \
     # x11-apps \
     # x11-utils \
     # x11-xserver-utils \

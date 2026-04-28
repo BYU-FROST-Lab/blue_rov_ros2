@@ -50,10 +50,7 @@ RUN pip3 install \
     smbus2 \
     pymavlink \
     scipy \
-    protobuf \
-    requests
-    --no-cache-dir
-    
+    wlsonar
 USER ${LABNAME}
 
 
