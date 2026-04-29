@@ -5,11 +5,8 @@
   <link name="bluerov2/base_link">
     <visual>
       <geometry>
-        <box size="0.45 0.34 0.11"/>
+        <mesh filename="package://sensor_bringup/urdf/meshes/bluerov2.dae" scale="0.025 0.025 0.025"/>
       </geometry>
-      <material name="blue">
-        <color rgba="0.0 0.2 0.8 1.0"/>
-      </material>
     </visual>
     <inertial>
       <mass value="10.0"/>
@@ -34,7 +31,7 @@
   <joint name="base_to_dvl" type="fixed">
     <parent link="bluerov2/base_link"/>
     <child link="bluerov2/dvl_link"/>
-    <origin xyz="0.0 0.0 -0.06" rpy="0 0 0"/>
+    <origin xyz="-0.27161 -0.10886 -0.01984" rpy="${pi} 0 0"/>
   </joint>
   <link name="bluerov2/dvl_link">
     <visual>
@@ -43,13 +40,21 @@
     </visual>
   </link>
 
-  <!-- Pressure sensors — shared mount point, update offsets -->
-  <joint name="base_to_pressure" type="fixed">
+   <!-- GPS Link -->
+  <link name="bluerov2/gps_link"/>
+  <joint name="base_to_gps" type="fixed">
     <parent link="bluerov2/base_link"/>
-    <child link="bluerov2/pressure_link"/>
-    <origin xyz="0.1 0.0 0.0" rpy="0 0 0"/>
+    <child link="bluerov2/gps_link"/>
+    <origin xyz="-0.11770 -0.20723 0.40019" rpy="0 0 0"/>
   </joint>
-  <link name="bluerov2/pressure_link"/>
+
+  <!-- Depth sensors — shared mount point, update offsets -->
+  <joint name="base_to_depth" type="fixed">
+    <parent link="bluerov2/base_link"/>
+    <child link="bluerov2/depth_link"/>
+    <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
+  </joint>
+  <link name="bluerov2/depth_link"/>
 
   <!-- Water Linked Sonar 3D-15 — update offset once mounted -->
   <joint name="base_to_sonar" type="fixed">
