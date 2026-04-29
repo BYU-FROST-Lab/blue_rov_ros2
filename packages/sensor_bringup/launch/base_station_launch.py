@@ -10,7 +10,7 @@ from pathlib import Path
 def generate_launch_description():
     home_path = os.getenv('HOME', '/home/frostlab')
     # Mapviz_config
-    config_path = os.path.join(home_path, 'config', '.mapviz_config')
+    config_path = os.path.join(home_path, 'config', 'BlueROV.mvc')
     # Mapviz origins param file
     mapviz_origins_path = os.path.join(
         home_path, 'config/mapviz_origins.yaml'
