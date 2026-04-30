@@ -1,4 +1,4 @@
-FROM bluerov_ros2:latest
+FROM frostlab/bluerov_ros2:latest
 ARG LABNAME=frostlab
 ARG ROS_DISTRO=humble 
 

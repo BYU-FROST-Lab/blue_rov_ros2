@@ -23,6 +23,10 @@ repositories:
     type: git
     url: https://github.com/waterlinked/Sonar-3D-15-ROS-driver.git
     version: main
+  cougars-ros2:
+    type: git
+    url: https://github.com/BYU-FRoSt-Lab/cougars-ros2.git
+    version: waypoint
   # seatrac:
   #   type: git
   #   url: https://github.com/BYU-FRoSt-Lab/seatrac-ros2.git
