@@ -23,6 +23,10 @@ repositories:
     type: git
     url: https://github.com/BYU-FROST-Lab/Sonar-3D-15-ROS-driver.git
     version: main
+  cougars-ros2:
+    type: git
+    url: https://github.com/BYU-FRoSt-Lab/cougars-ros2.git
+    version: waypoint
   blueprint_oculus:
     type: git
     url: git@bitbucket.org:frostlab/blueprint_oculus_sonar_driver.git

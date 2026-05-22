@@ -16,6 +16,10 @@ setup(
         (os.path.join('share', package_name, 'urdf'),
             glob(os.path.join('urdf', '*.xacro'))),
         ('share/' + package_name, ['package.xml']),
+        (
+            os.path.join("share", package_name, "urdf/meshes"),
+            glob("urdf/meshes/*.*"),
+        ),
     ],
     install_requires=['setuptools'],
     zip_safe=True,

@@ -5,7 +5,7 @@ services:
       dockerfile: Dockerfile
       args:
         LABNAME: frostlab
-    image: bluerov_ros2:base
+    image: frostlab/bluerov_ros2:base
     container_name: bluerov_base
     privileged: true # Allows access to devices
     volumes:

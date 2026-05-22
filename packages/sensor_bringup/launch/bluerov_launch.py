@@ -60,12 +60,6 @@ def generate_launch_description():
         'dvl_params.yaml'
     )
 
-    dvl_launch = os.path.join(
-        get_package_share_directory('dvl_a50'),
-        'launch',
-        'dvl_a50_launch.py'
-    )
-
     verbose = "false"  # Default to 'false'
     param_file = '/home/frostlab/config/vehicle_params.yaml'
 
@@ -83,11 +77,28 @@ def generate_launch_description():
                 default_value="false",
                 description="Use simulation clock if true and  don't launch sensor drivers",
             ),
-        IncludeLaunchDescription(
-            PythonLaunchDescriptionSource(dvl_launch),
-            launch_arguments={
-                'params_file': dvl_a50_config,
-            }.items()
+        launch_ros.actions.Node(
+            package='dvl_a50',
+            executable='dvl_a50_nav',
+            name='dvl_nav_interface',
+            parameters=dvl_a50_config,
+            namespace=LaunchConfiguration('namespace'),
+            output='screen',
+        ),
+        launch_ros.actions.Node(
+            package='dvl_a50',
+            executable='dvl_a50_sensor',
+            output='screen',
+            namespace=LaunchConfiguration('namespace'),
+            parameters=dvl_a50_config,
+        ),
+        launch_ros.actions.Node(
+            package='dvl_a50',
+            executable='dvl_static_tf_pub.py',
+            name='body_zup_to_zdown',
+            parameters=dvl_a50_config, 
+            namespace=LaunchConfiguration('namespace'),
+            output='screen',
         ),
 
         # launch_ros.actions.Node(
