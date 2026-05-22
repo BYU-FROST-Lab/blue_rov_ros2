@@ -29,6 +29,10 @@ RUN apt-get update && apt-get install -y \
     netcat \
     net-tools \
     iputils-ping \
+    build-essential \
+    libglib2.0-dev \
+    cmake \
+    default-jdk \
     && rm -rf /var/lib/apt/lists/*
 
 
