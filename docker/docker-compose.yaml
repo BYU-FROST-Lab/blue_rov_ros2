@@ -13,6 +13,8 @@ services:
       - ../config:/home/frostlab/config/:rw
       - /dev:/dev:rw # Mounts the device directory to allow access to devices
       - ../packages:/home/frostlab/ros2_ws/src:rw
+      - ../scripts:/home/frostlab/scripts:rw
+      - ~/.ssh:/home/frostlab/.ssh:rw  # SSH keys so it can clone bitbucket repos for lcm driver
       # - ./entrypoint.sh:/entrypoint.sh:rw # Custom entrypoint script
     environment:
       RCUTILS_COLORIZED_OUTPUT: 1 # Allows launch files to print colored text

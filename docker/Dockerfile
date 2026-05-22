@@ -29,6 +29,7 @@ RUN apt-get update && apt-get install -y \
     netcat \
     net-tools \
     iputils-ping \
+    # LCM dependencies below
     build-essential \
     libglib2.0-dev \
     cmake \
@@ -55,8 +56,14 @@ RUN pip3 install \
     pymavlink \
     scipy \
     wlsonar
+    
+# Apt installs last minute adds
+RUN apt update && apt install -y \
+    ros-${ROS_DISTRO}-xacro \
+    ros-${ROS_DISTRO}-robot-localization \
+    && rm -rf /var/lib/apt/lists/*
+    
 USER ${LABNAME}
-
 
 # --- Source ROS2 ---
 RUN echo "source /opt/ros/${ROS_DISTRO}/setup.bash" >> ~/.bashrc \

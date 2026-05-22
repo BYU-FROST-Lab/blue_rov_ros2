@@ -38,10 +38,10 @@ topics:
   - name: /bluerov2/dvl/twist
     type: geometry_msgs/msg/TwistWithCovarianceStamped
   
-  - name: /bluerov2/deep/depth_data
+  - name: /bluerov2/deep/depth/odom
     type: nav_msgs/msg/Odometry
 
-  - name: /bluerov2/shallow/depth_data
+  - name: /bluerov2/shallow/depth/odom
     type: nav_msgs/msg/Odometry
 
   - name: /bluerov2/dvl/odom

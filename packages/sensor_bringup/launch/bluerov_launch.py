@@ -1,5 +1,6 @@
 import launch
 import launch_ros.actions
+from launch_ros.actions import Node
 import launch_ros.descriptions
 from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
 from launch.substitutions import LaunchConfiguration
@@ -69,6 +70,7 @@ def generate_launch_description():
         output = 'log'
 
     launch_actions = []
+    namespace = LaunchConfiguration('namespace')
 
     launch_actions.extend([
         DeclareLaunchArgument('namespace', default_value='bluerov2'),
@@ -81,7 +83,7 @@ def generate_launch_description():
             package='dvl_a50',
             executable='dvl_a50_nav',
             name='dvl_nav_interface',
-            parameters=dvl_a50_config,
+            parameters=[dvl_a50_config],
             namespace=LaunchConfiguration('namespace'),
             output='screen',
         ),
@@ -90,15 +92,34 @@ def generate_launch_description():
             executable='dvl_a50_sensor',
             output='screen',
             namespace=LaunchConfiguration('namespace'),
-            parameters=dvl_a50_config,
+            parameters=[dvl_a50_config],
         ),
         launch_ros.actions.Node(
-            package='dvl_a50',
-            executable='dvl_static_tf_pub.py',
+            package='tf2_ros',
+            executable='static_transform_publisher',
             name='body_zup_to_zdown',
-            parameters=dvl_a50_config, 
-            namespace=LaunchConfiguration('namespace'),
+            namespace=namespace,
+            arguments=[
+                '--x', '0', 
+                '--y', '0', 
+                '--z', '0', 
+                '--qx', '1', 
+                '--qy', '0', 
+                '--qz', '0', 
+                '--qw', '0',
+                '--frame-id', 'bluerov2/dvl_odom',
+                '--child-frame-id', 'bluerov2/dvl_odom_ned'],
             output='screen',
+        ),
+
+        # Map to DVL odom frame handling with GPS and IMU. 
+        Node(
+            package='robot_localization',
+            executable='ekf_node',
+            name='ekf_filter_node_map',
+            parameters=[param_file],
+            namespace=namespace,
+            remappings=[('odometry/filtered', 'odometry/global')]    
         ),
 
         # launch_ros.actions.Node(
@@ -108,6 +129,14 @@ def generate_launch_description():
         #     namespace=LaunchConfiguration('namespace'),
         #     output=output,
         # ),
+        Node(
+            package='sensor_bringup',
+            executable='gps_odom',
+            parameters=[param_file],\
+            namespace=LaunchConfiguration('namespace'),
+            output=output,
+            remappings=[('fix', 'imu/nav_sat_fix')],
+        ),
         launch_ros.actions.Node(
             package='mavlink_bridge',
             executable='mavlink_bridge',

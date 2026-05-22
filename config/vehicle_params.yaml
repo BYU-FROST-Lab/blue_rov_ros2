@@ -7,10 +7,14 @@
     # https://www.ngdc.noaa.gov/geomag/calculators/magcalc.shtml?
 
     vehicle_ID: 3
+    # origin:
+    #   latitude: 40.238833
+    #   longitude: -111.742249
+    #   altitude: 1367.00
     origin:
-      latitude: 40.238833
-      longitude: -111.742249
-      altitude: 1367.00
+      latitude: 40.137388
+      longitude: -111.029430
+      altitude: 2318.0
 
 /**/pressure_pub:
   ros__parameters:
@@ -31,14 +35,13 @@
     default_depth_variance: 0.5
     use_calibration_variance: true
     calibrate_on_startup: true
+    map_frame: 'map'
 
 bluerov2: # Change this to match the vehicle name
 
-  # gps_odom:
-  #   ros__parameters:
-  #     origin.latitude: 40.238833 # 40.2735 for Utah Lake
-  #     origin.longitude: -111.742249 # -111.7126 for Utah Lake
-  #     origin.altitude: 1367.00 # from testing
+  gps_odom:
+    ros__parameters:
+      frame_id: bluerov2/gps_link
 
   shallow:
     pressure_pub:
@@ -97,6 +100,59 @@ bluerov2: # Change this to match the vehicle name
     ros__parameters:
       odom_topic: dvl/odom
       output_topic: dvl/fix
+  
+  ekf_filter_node_map:
+    ros__parameters:
+      frequency: 30.0
+      two_d_mode: false
+      publish_tf: false  # map to dvl_odom. but it needs the transform to base link... ughhh
+      print_diagnostics: false
+      map_frame: map
+      odom_frame: bluerov2/dvl_odom
+      base_link_frame: bluerov2/base_link
+      world_frame: map
+
+      odom0: dvl/odom
+      odom0_config: [true, true, true, # X, Y, Z
+                      false, false, false, # Roll, Pitch, Yaw
+                      false,  false,  false,  # Vx, Vy, Vz
+                      false,  false,  false,  # Vroll, Vpitch, Vyaw
+                      false, false, false] # Ax, Ay, Az
+      odom0_queue_size: 10
+      odom0_differential: true
+      odom0_relative: false
+
+      odom1: shallow/depth/odom
+      odom1_config: [false, false, true,  # X, Y, Z
+                      false, false, false, # Roll, Pitch, Yaw
+                      false, false, false, # Vx, Vy, Vz
+                      false, false, false, # Vroll, Vpitch, Vyaw
+                      false, false, false] # Ax, Ay, Az
+      odom1_queue_size: 5
+      odom1_differential: false
+      odom1_relative: false # Absolute depth in the map frame.
+
+      odom2: gps/odom
+      odom2_config: [true,  true,  false, # X, Y, Z  
+                      false, false, false, # Roll, Pitch, Yaw
+                      false, false, false, # Vx, Vy, Vz
+                      false, false, false, # Vroll, Vpitch, Vyaw
+                      false, false, false] # Ax, Ay, Az
+      odom2_queue_size: 5
+      odom2_differential: false
+      odom2_relative: false # Absolute GPS position in the map frame.
+
+      imu0: imu/data
+      imu0_config: [false, false, false, # X, Y, Z
+                    true,  true,  true,  # Roll, Pitch, Yaw
+                    false, false, false, # Vx, Vy, Vz
+                    false, false, false, # Vroll, Vpitch, Vyaw
+                    false, false, false] # Ax, Ay, Az
+      imu0_queue_size: 15
+      imu0_differential: false
+      imu0_relative: false # Absolute orientation in the map frame.
+
+  
 
     # modem_ros_node:
     #   ros__parameters:
