@@ -35,13 +35,13 @@ RUN apt-get update && apt-get install -y \
 # Create i2c group with typical GID (if needed)
 RUN groupadd -f -g 994 i2c && usermod -aG i2c ${LABNAME}
 
-# # install LCM after libglib2.0-dev
-# WORKDIR /home/frostlab
-# RUN git clone https://github.com/lcm-proj/lcm.git
-# WORKDIR /home/frostlab/lcm
-# RUN mkdir build && cd build && \
-#     cmake .. && \
-#     make -j$(nproc) && make install && ldconfig
+# install LCM after libglib2.0-dev
+WORKDIR /home/frostlab
+RUN git clone https://github.com/lcm-proj/lcm.git
+WORKDIR /home/frostlab/lcm
+RUN mkdir build && cd build && \
+    cmake .. && \
+    make -j$(nproc) && make install && ldconfig
 
 RUN mkdir -p /root/ros2_ws/src
 
