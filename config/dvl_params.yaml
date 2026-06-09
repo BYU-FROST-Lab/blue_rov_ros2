@@ -4,6 +4,7 @@
       dvl_ip_address: "192.168.2.95"
       dvl_frame_id: bluerov2/dvl_link
       odom_frame_id: bluerov2/dvl_odom_ned
+      startup_ntp_address: 192.168.2.103
 
   dvl_nav_interface:
     ros__parameters:
