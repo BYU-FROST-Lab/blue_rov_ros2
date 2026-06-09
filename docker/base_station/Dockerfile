@@ -13,6 +13,8 @@ RUN apt update && apt install -y \
     ros-${ROS_DISTRO}-multires-image \
     ros-${ROS_DISTRO}-rosapi \
     ros-${ROS_DISTRO}-rviz2 \
+    ros-${ROS_DISTRO}-rqt \
+    ros-${ROS_DISTRO}-rqt-common-plugins \
     # x11-apps \
     # x11-utils \
     # x11-xserver-utils \
