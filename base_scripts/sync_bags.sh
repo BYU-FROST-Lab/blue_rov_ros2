@@ -37,7 +37,7 @@ LOCAL_FOLDER="$HOME/blue_rov_ros2/bags/$FOLDER"
 mkdir -p "$LOCAL_FOLDER"
 
 # Run rsync with sshpass to avoid password prompt
-rsync -avzh --progress \
+rsync -avzhL --progress \
     "${REMOTE_USER}@${IP_ADDRESS}:${REMOTE_FOLDER}/" "$LOCAL_FOLDER/"
 
 # # Check if rsync was successful
