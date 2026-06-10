@@ -149,7 +149,6 @@ groups:
         scale: 0.01
         units: "s"
         warn: 5.0
-        error: 30.0
       - field: position_accuracy.x
         name: "pos accuracy north (m)"
         type: max
