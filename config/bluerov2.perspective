@@ -1,0 +1,89 @@
+{
+  "keys": {},
+  "groups": {
+    "mainwindow": {
+      "keys": {
+        "geometry": {
+          "repr(QByteArray.hex)": "QtCore.QByteArray(b'01d9d0cb00030000000005e20000004000000b3f00000653000005e20000008a00000b3f0000065300000000000000000b40000005e20000008a00000b3f00000653')",
+          "type": "repr(QByteArray.hex)",
+          "pretty-print": "       @ ? S     ? S    @     ? S"
+        },
+        "state": {
+          "repr(QByteArray.hex)": "QtCore.QByteArray(b'000000ff00000000fd00000001000000030000055e00000586fc0100000003fb000000500063006f00750067005f007200710074005f005f0043006f00750067005500740069006c0073005f005f0031005f005f0043006f00750067005500740069006c007300500061006e0065006c0055006901000000000000071a0000000000000000fb0000005400640076006c005f006100350030005f007200710074005f005f00440056004c00410035003000500061006e0065006c005f005f0031005f005f00440056004c00410035003000500061006e0065006c0055006901000000000000055e0000017c00fffffffb00000072007200710074005f0073006500720076006900630065005f00630061006c006c00650072005f005f005300650072007600690063006500430061006c006c00650072005f005f0031005f005f005300650072007600690063006500430061006c006c00650072005700690064006700650074010000070c000003b000000000000000000000055e0000000000000004000000040000000800000008fc00000001000000030000000100000036004d0069006e0069006d0069007a006500640044006f0063006b00570069006400670065007400730054006f006f006c0062006100720000000000ffffffff0000000000000000')",
+          "type": "repr(QByteArray.hex)",
+          "pretty-print": "                 Pcoug_rqt__CougUtils__1__CougUtilsPanelUi          Tdvl_a50_rqt__DVLA50Panel__1__DVLA50PanelUi          rrqt_service_caller__ServiceCaller__1__ServiceCallerWidget                            6MinimizedDockWidgetsToolbar        "
+        }
+      },
+      "groups": {
+        "toolbar_areas": {
+          "keys": {
+            "MinimizedDockWidgetsToolbar": {
+              "repr": "8",
+              "type": "repr"
+            }
+          },
+          "groups": {}
+        }
+      }
+    },
+    "pluginmanager": {
+      "keys": {
+        "running-plugins": {
+          "repr": "{'dvl_a50_rqt/DVLA50Panel': [1]}",
+          "type": "repr"
+        }
+      },
+      "groups": {
+        "plugin__dvl_a50_rqt__DVLA50Panel__1": {
+          "keys": {},
+          "groups": {
+            "dock_widget__DVLA50PanelUi": {
+              "keys": {
+                "dock_widget_title": {
+                  "repr": "'DVL-A50 Control'",
+                  "type": "repr"
+                },
+                "dockable": {
+                  "repr": "True",
+                  "type": "repr"
+                },
+                "parent": {
+                  "repr": "None",
+                  "type": "repr"
+                }
+              },
+              "groups": {}
+            },
+            "plugin": {
+              "keys": {
+                "namespace": {
+                  "repr": "'dvl'",
+                  "type": "repr"
+                }
+              },
+              "groups": {}
+            }
+          }
+        },
+        "plugin__rqt_service_caller__ServiceCaller__1": {
+          "keys": {},
+          "groups": {
+            "plugin": {
+              "keys": {
+                "current_service_name": {
+                  "repr": "'/sonar_image_publisher/get_parameters'",
+                  "type": "repr"
+                },
+                "splitter_orientation": {
+                  "repr": "'2'",
+                  "type": "repr"
+                }
+              },
+              "groups": {}
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -7,11 +7,11 @@ enable_antialiasing: true
 show_displays: true
 show_status_bar: true
 show_capture_tools: true
-window_width: 1848
-window_height: 1016
-view_scale: 0.166654751
-offset_x: -40.614521
-offset_y: 29.7967415
+window_width: 2748
+window_height: 1482
+view_scale: 0.0815403461
+offset_x: -63.1916428
+offset_y: -38.4901848
 use_latest_transforms: true
 background: "#ffffff"
 image_transport: raw
@@ -32,7 +32,7 @@ displays:
   - type: mapviz_plugins/navsat
     name: Raw GPS
     config:
-      visible: false
+      visible: true
       collapsed: true
       topic: /bluerov2/imu/nav_sat_fix
       color: "#ffff00"
@@ -79,15 +79,15 @@ displays:
     name: Oculus Sonar
     config:
       visible: true
-      collapsed: false
-      topic: /oculus_debug_img
-      anchor: top left
-      units: pixels
+      collapsed: true
+      topic: /bluerov2/oculus_debug_image
+      anchor: top right
+      units: percent
       offset_x: 0
       offset_y: 0
-      width: 320
-      height: 240
-      keep_ratio: false
+      width: 44.5
+      height: 62
+      keep_ratio: true
       rotation: 0
       image_transport: default
       qos_depth: 10

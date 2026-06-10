@@ -9,32 +9,27 @@ from pathlib import Path
 
 def generate_launch_description():
     home_path = os.getenv('HOME', '/home/frostlab')
-    # Mapviz_config
-    config_path = os.path.join(home_path, 'config', 'BlueROV.mvc')
+    config_path = os.path.join(home_path, 'config')
     # Mapviz origins param file
     mapviz_origins_path = os.path.join(
-        home_path, 'config/mapviz_origins.yaml'
+        config_path, 'mapviz_origins.yaml'
     )
+    base_station_params = os.path.join(config_path, 'base_station_params.yaml')
+    rqt_perspective_file = os.path.join(config_path, "bluerov2.perspective")
     
     mapviz_origins = Path(mapviz_origins_path).read_text()
   
     return LaunchDescription([
         # Set environment variable
         # Declare launch arguments
-        DeclareLaunchArgument('print_profile_data', default_value='false'),
         DeclareLaunchArgument('origin', default_value='bluerov_site'),
-
-        LogInfo(msg=['Config file path: ', config_path]),
 
         # Node for mapviz
         Node(
             package='mapviz',
             executable='mapviz',
             name='mapviz',
-            parameters=[{
-                'print_profile_data': LaunchConfiguration('print_profile_data'),
-                'config': config_path,
-            }],
+            parameters=[base_station_params],
         ),
 
         # Node for initialize_origin
@@ -44,7 +39,6 @@ def generate_launch_description():
             name='initialize_origin',
             remappings=[('/fix', '/bluerov2/imu/nav_sat_fix')],
             parameters=[
-                {'local_xy_frame': '/map'},
                 {'local_xy_origin': LaunchConfiguration('origin')},
                 {'local_xy_origins': mapviz_origins},
             ]
@@ -54,11 +48,22 @@ def generate_launch_description():
             executable='static_transform_publisher',
             name='swri_transform',
             arguments=['0', '0', '0', '0', '0', '0', '1', 'map', 'origin'],
-            parameters=[
-                {"local_xy_frame": "map"},
-                {"local_xy_origin": "auto"},
-                {"local_xy_navsatfix_topic": "/gps/fix"}
-            ]
+            parameters=[base_station_params],
+        ),
+        Node(
+            package='blueprint_oculus_sonar_driver',
+            executable='sonar_image_publisher.py',
+            name='sonar_image_publisher',
+            parameters=[base_station_params],
+            namespace='bluerov2',
+        ),
+        Node(
+            package='rqt_gui',
+            executable='rqt_gui',
+            name='rqt_gui',
+            arguments=["--perspective-file", rqt_perspective_file],
+            namespace='bluerov2',
+            parameters=[base_station_params],
         ),
 
     ])
