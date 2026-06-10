@@ -19,6 +19,7 @@ tmux split-window -h -t ${SESSION_NAME}:0
 
 # Split left pane into top/bottom
 tmux split-window -v -t ${SESSION_NAME}:0.0
+tmux split-window -v -t ${SESSION_NAME}:0.1
 
 # Top-left pane
 tmux send-keys -t ${SESSION_NAME}:0.0 \
@@ -32,18 +33,26 @@ tmux send-keys -t ${SESSION_NAME}:0.0 \
 tmux send-keys -t ${SESSION_NAME}:0.0 \
   "ros2 launch sensor_bringup bluerov_launch.py" 
 
-# Bottom-left pane
+# mid-left pane
 tmux send-keys -t ${SESSION_NAME}:0.1 \
 "clear" C-m
 tmux send-keys -t ${SESSION_NAME}:0.1 \
-  "gpspipe -r | nc -u 192.168.2.2 27000" 
+  "gpspipe -r | nc -u 192.168.2.2 27000" C-m
 
-# Right pane
+# bottom-left pane
 tmux send-keys -t ${SESSION_NAME}:0.2 \
   "docker exec -it ${CONTAINER} bash" C-m
 tmux send-keys -t ${SESSION_NAME}:0.2 \
   "clear" C-m
 tmux send-keys -t ${SESSION_NAME}:0.2 \
+  "ros2 launch blueprint_oculus_sonar_driver oculus_driver.launch.py namespace:=bluerov2 params_file:=/home/frostlab/config/oculus_driver.yaml"
+
+# Right pane
+tmux send-keys -t ${SESSION_NAME}:0.3 \
+  "docker exec -it ${CONTAINER} bash" C-m
+tmux send-keys -t ${SESSION_NAME}:0.3 \
+  "clear" C-m
+tmux send-keys -t ${SESSION_NAME}:0.3 \
   "ros2 topic list" 
 
 ########################
