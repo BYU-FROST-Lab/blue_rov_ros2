@@ -52,19 +52,19 @@ groups:
       - field: status.attitude_valid
         name: "attitude valid"
         type: bool
-        level_if_false: WARN
+        level_if_false: ERROR
       - field: status.heading_valid
         name: "heading valid"
         type: bool
-        level_if_false: WARN
+        level_if_false: ERROR
       - field: status.velocity_valid
         name: "velocity valid"
         type: bool
-        level_if_false: WARN
+        level_if_false: ERROR
       - field: status.position_valid
         name: "position valid"
         type: bool
-        level_if_false: WARN
+        level_if_false: ERROR
       # 1-sigma EKF position accuracy (North/East), metres.
       - field: position_accuracy.x
         name: "pos accuracy north (m)"
