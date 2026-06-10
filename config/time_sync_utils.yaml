@@ -10,4 +10,10 @@ bluerov2:
       # How often the DiagnosticArray is published on /diagnostics.
       publish_period_seconds: 1.0
       # Prefix on each DiagnosticStatus.name so the aggregator can group them.
-      diagnostic_name_prefix: "timesync" 
+      diagnostic_name_prefix: "timesync"
+
+      # Default subsampling: deserialize the header only every Nth message (1 = every
+      # message). Counting/rate/staleness stay exact; only the sync-offset stamp is
+      # sampled. Raise this (or set per-topic via 'sample_every_n' in the topics file)
+      # for large/high-rate messages like PointCloud2/Image to cut CPU.
+      default_sample_every_n: 1

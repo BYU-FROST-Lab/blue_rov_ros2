@@ -37,7 +37,7 @@ def generate_launch_description():
             package='swri_transform_util',
             executable='initialize_origin.py',
             name='initialize_origin',
-            remappings=[('/fix', '/bluerov2/imu/nav_sat_fix')],
+            remappings=[('/diagnostics', '/diagnostics_base_station')],
             parameters=[
                 {'local_xy_origin': LaunchConfiguration('origin')},
                 {'local_xy_origins': mapviz_origins},
@@ -50,13 +50,13 @@ def generate_launch_description():
             arguments=['0', '0', '0', '0', '0', '0', '1', 'map', 'origin'],
             parameters=[base_station_params],
         ),
-        Node(
-            package='blueprint_oculus_sonar_driver',
-            executable='sonar_image_publisher.py',
-            name='sonar_image_publisher',
-            parameters=[base_station_params],
-            namespace='bluerov2',
-        ),
+        # Node(
+        #     package='blueprint_oculus_sonar_driver',
+        #     executable='sonar_image_publisher.py',
+        #     name='sonar_image_publisher',
+        #     parameters=[base_station_params],
+        #     namespace='bluerov2',
+        # ),
         Node(
             package='rqt_gui',
             executable='rqt_gui',

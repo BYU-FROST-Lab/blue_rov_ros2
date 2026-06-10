@@ -1,6 +1,8 @@
 # List the name of the topic with the corresponding topic type
 # Ex.   - name: /topic
-#       - type: topic/type
+#         type: topic/type
+#         sample_every_n: 10   # optional: only deserialize the header every 10th msg
+#         qos: { reliability: best_effort }   # optional: match the publisher's QoS
 
 # Below is a list of all of the topic types accepted up to this point.
 #   - nav_msgs/msg/Odometry
@@ -11,6 +13,14 @@
 
 # Notes:
 #   Time sync status is referenced to the first topic received by the callback function.
+#   For large/high-rate topics (PointCloud2, Image), set 'sample_every_n' to avoid
+#   deserializing every full message just to read its header; counting, rate, and
+#   staleness stay exact since they don't require deserialization.
+#   Example:
+#     - name: /bluerov2/sonar/points
+#       type: sensor_msgs/msg/PointCloud2
+#       sample_every_n: 10
+#       qos: { reliability: best_effort }
 topics:
   # Inertial Sense IMU/GPS
   - name: /bluerov2/imu/data
@@ -19,6 +29,8 @@ topics:
   # Ouster LiDARs
   # - name: /points
   #   type: sensor_msgs/msg/PointCloud2
+  #   sample_every_n: 10
+
   # - name: /imu
   #   type: sensor_msgs/msg/Imu
 

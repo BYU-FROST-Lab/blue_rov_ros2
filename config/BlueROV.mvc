@@ -9,9 +9,9 @@ show_status_bar: true
 show_capture_tools: true
 window_width: 2748
 window_height: 1482
-view_scale: 0.0815403461
-offset_x: -63.1916428
-offset_y: -38.4901848
+view_scale: 0.374675423
+offset_x: -264.747528
+offset_y: 118.378883
 use_latest_transforms: true
 background: "#ffffff"
 image_transport: raw
@@ -29,6 +29,32 @@ displays:
       bing_api_key: ""
       stadia_api_key: ""
       source: Google Maps
+  - type: mapviz_plugins/grid
+    name: 20
+    config:
+      visible: true
+      collapsed: true
+      color: "#ff0000"
+      alpha: 0.14999999999999999
+      frame: map
+      x: -1000
+      y: -1000
+      size: 20
+      rows: 100
+      columns: 100
+  - type: mapviz_plugins/grid
+    name: 100
+    config:
+      visible: true
+      collapsed: true
+      color: "#000000"
+      alpha: 0.5
+      frame: map
+      x: -1000
+      y: -1000
+      size: 100
+      rows: 20
+      columns: 20
   - type: mapviz_plugins/navsat
     name: Raw GPS
     config:
@@ -86,10 +112,24 @@ displays:
       offset_x: 0
       offset_y: 0
       width: 44.5
-      height: 62
+      height: 75.700000000000003
       keep_ratio: true
       rotation: 0
       image_transport: default
+      qos_depth: 10
+      qos_history: 1
+      qos_reliability: 1
+      qos_durability: 2
+  - type: mapviz_plugins/attitude_indicator
+    name: Attitude
+    config:
+      visible: true
+      collapsed: true
+      topic: /bluerov2/dvl/odom
+      x: 6
+      y: 1136
+      width: 277
+      height: 277
       qos_depth: 10
       qos_history: 1
       qos_reliability: 1
