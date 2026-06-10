@@ -61,7 +61,11 @@ RUN pip3 install \
 RUN apt update && apt install -y \
     ros-${ROS_DISTRO}-xacro \
     ros-${ROS_DISTRO}-robot-localization \
+    python3-opencv \
     && rm -rf /var/lib/apt/lists/*
+
+RUN pip install --no-cache-dir \
+    'numpy<2'
     
 USER ${LABNAME}
 
