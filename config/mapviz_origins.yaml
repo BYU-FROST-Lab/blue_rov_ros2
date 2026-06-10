@@ -18,3 +18,18 @@
   longitude: -111.647
   altitude: 1420.00
   heading: 0.0
+- name: rockport
+  latitude: 40.760777
+  longitude: -111.3925974
+  altitude: 1838.0
+  heading: 0.0
+- name: sand_hollow
+  latitude: 37.119915
+  longitude: -113.382039
+  altitude: 927.0
+  heading: 0.0
+- name: quail_creek
+  latitude: 37.186594
+  longitude: -113.388518
+  altitude: 906.0
+  heading: 0.0

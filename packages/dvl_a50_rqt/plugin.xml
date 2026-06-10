@@ -1,0 +1,11 @@
+<library path="src">
+  <class name="DVLA50Panel"
+         type="dvl_a50_rqt.dvl_a50_plugin.DVLA50Plugin"
+         base_class_type="rqt_gui_py::Plugin">
+    <description>DVL-A50 configuration and monitoring panel</description>
+    <qtgui>
+      <label>DVL-A50 Control</label>
+      <icon type="theme">preferences-system</icon>
+    </qtgui>
+  </class>
+</library>

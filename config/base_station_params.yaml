@@ -1,0 +1,31 @@
+mapviz:
+  ros__parameters:
+    print_profile_data: false
+    config: /home/frostlab/config/BlueROV.mvc
+
+initialize_origin:
+  ros__parameters:
+    local_xy_frame: /map
+
+bluerov2:
+  sonar_image_publisher:
+    ros__parameters:
+      # false = publish the raw sonar image (same pixel layout as /oculus_ping image_msg)
+      # true  = reproject to a Cartesian fan image; width adapts to the bearing aperture
+      #         (LF ~130° → wider image, HF ~70°/60° → narrower image)
+      polar: true
+
+      # Brightness multiplier applied to pixel values before publishing (1.0 = no change)
+      # Values > 1.0 will clip to 255.
+      gain: 2.5
+
+      # Minimum seconds between publishes; 0.0 = publish every ping
+      interval: 0.0
+
+      # Draw range arcs and bearing lines overlay when polar=true
+      grid: true
+  
+  rqt_gui:
+    ros__parameters:
+      test: true
+      

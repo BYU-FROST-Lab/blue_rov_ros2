@@ -60,6 +60,18 @@ def generate_launch_description():
         'config',
         'dvl_params.yaml'
     )
+    time_sync_config = os.path.join(
+        '/home',
+        'frostlab',
+        'config',
+        'time_sync_utils.yaml'
+    )
+    diagnostic_agg_config = os.path.join(
+        '/home',
+        'frostlab',
+        'config',
+        'diagnostic_aggregator.yaml'
+    )
 
     verbose = "false"  # Default to 'false'
     param_file = '/home/frostlab/config/vehicle_params.yaml'
@@ -234,6 +246,27 @@ def generate_launch_description():
             executable='static_transform_publisher',
             name='map_to_odom',
             arguments=['0', '0', '0', '0', '0', '0', '1', 'map', 'odom'],
+        ),
+
+        # Continuous time-sync monitor. Publishes diagnostic_msgs on /diagnostics
+        # and exposes the 'check_time_sync' std_srvs/Trigger service.
+        launch_ros.actions.Node(
+            package='topic_monitor',
+            executable='topic_monitor_node',
+            name='topic_monitor',
+            namespace=LaunchConfiguration('namespace'),
+            parameters=[time_sync_config],
+            output=output,
+        ),
+
+        # Aggregates /diagnostics into /diagnostics_agg so rqt_robot_monitor can
+        # display the time-sync status tree.
+        launch_ros.actions.Node(
+            package='diagnostic_aggregator',
+            executable='aggregator_node',
+            name='diagnostic_aggregator',
+            parameters=[diagnostic_agg_config],
+            output=output,
         ),
 
     ])
