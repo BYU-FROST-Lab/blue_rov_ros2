@@ -1,0 +1,7 @@
+sonar_node:
+  ros__parameters:
+    IP: 192.168.2.96
+    speed_of_sound: 1491
+    enable_acoustics: true
+    frame_id: sonar_frame
+    sample_frequency: 100.0

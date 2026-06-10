@@ -1,0 +1,58 @@
+oculus_driver:
+  ros__parameters:
+    # Operating frequency mode
+    # 1 = Low Frequency  (M750d: 750 kHz,  range up to 120 m)
+    # 2 = High Frequency (M750d: 1.2 MHz,  range up to  40 m)
+    # 1 = Low Frequency  (M1200d: 1.2 MHz, range up to  30 m)
+    # 2 = High Frequency (M1200d: 2.1 MHz, range up to  10 m)
+    mode: 2
+
+    # Maximum ping rate
+    # 0 = 10 Hz
+    # 1 = 15 Hz
+    # 2 = 40 Hz
+    # 3 =  5 Hz
+    # 4 =  2 Hz
+    # 5 = Disabled
+    ping_rate: 2
+
+    # Range in meters (clamped to hardware limits based on mode)
+    range: 8.0
+
+    # Gain percentage (0.0 – 100.0)
+    gain: 0.0
+
+    # Speed of sound in m/s; 0.0 = auto-calculate from salinity/temperature
+    speed_of_sound: 0.0
+
+    # Water salinity in ppm: 0.0 = freshwater, 35.0 = saltwater
+    salinity: 0.0
+
+    # Enable sonar automatic gain control (flag bit 0x10 in fire message)
+    # When true, 'gain' acts as an intensity demand rather than a fixed gain percent
+    gain_assist: false
+
+    # Gamma correction applied by the sonar to the output image (0–255)
+    # 0 and 255 both equal gamma=1.0 (linear). 127 = gamma≈0.5 (default, matches SDK)
+    gamma_correction: 127
+
+    # Network speed limit (0=minimum bandwidth, 255=unlimited).
+    # Reduce if sharing a bandwidth-limited link with other traffic.
+    network_speed: 255
+
+    # Seconds to wait for the sonar UDP broadcast during startup.
+    # 0 = wait indefinitely (default). Set to e.g. 30 to fail fast when no sonar is present.
+    discovery_timeout_s: 0
+
+sonar_image_publisher:
+  ros__parameters:
+    # false = publish the raw sonar image (same pixel layout as /oculus_ping image_msg)
+    # true  = reproject to a 512x512 Cartesian fan image corrected for polar geometry
+    polar: true
+
+    # Brightness multiplier applied to pixel values before publishing (1.0 = no change)
+    # Values > 1.0 will clip to 255.
+    gain: 5.0
+
+    # Minimum seconds between publishes; 0.0 = publish every ping
+    interval: 1.0
