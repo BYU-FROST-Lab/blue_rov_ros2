@@ -2,7 +2,7 @@
   ros__parameters:
     topics_file: "/home/frostlab/config/monitored_topics.yaml"
     relative_path: false
-    sync_threshold_warn_seconds: 0.2
+    sync_threshold_warn_seconds: 0.4
     sync_threshold_error_seconds: 1.0
     # A topic with no message newer than this (wall-clock seconds) is "stale".
     stale_timeout_seconds: 2.0
