@@ -92,7 +92,7 @@
                   "type": "repr"
                 },
                 "image_transport": {
-                  "repr": "'raw'",
+                  "repr": "'compressed'",
                   "type": "repr"
                 },
                 "overlay table": {

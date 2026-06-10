@@ -174,12 +174,7 @@
                 </item>
                 <item>
                   <property name="text">
-                    <string>high_resolution</string>
-                  </property>
-                </item>
-                <item>
-                  <property name="text">
-                    <string>long_range</string>
+                    <string>wt</string>
                   </property>
                 </item>
               </widget>

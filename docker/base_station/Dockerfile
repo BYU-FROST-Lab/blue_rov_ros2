@@ -15,6 +15,7 @@ RUN apt update && apt install -y \
     ros-${ROS_DISTRO}-rviz2 \
     ros-${ROS_DISTRO}-rqt* \
     ros-${ROS_DISTRO}-diagnostic-aggregator \
+    ros-${ROS_DISTRO}-image-transport-plugins \
     # x11-apps \
     # x11-utils \
     # x11-xserver-utils \
