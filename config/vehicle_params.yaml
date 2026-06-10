@@ -11,10 +11,16 @@
     #   latitude: 40.238833
     #   longitude: -111.742249
     #   altitude: 1367.00
+    # origin:
+    #   latitude: 40.137388
+    #   longitude: -111.029430
+    #   altitude: 2318.0
+
+    # Sand Hollow
     origin:
-      latitude: 40.137388
-      longitude: -111.029430
-      altitude: 2318.0
+      latitude: 37.119915
+      longitude: -113.382039
+      altitude: 927.0
 
 /**/pressure_pub:
   ros__parameters:

@@ -62,6 +62,7 @@ RUN apt update && apt install -y \
     ros-${ROS_DISTRO}-xacro \
     ros-${ROS_DISTRO}-robot-localization \
     python3-opencv \
+    ros-${ROS_DISTRO}-diagnostic-aggregator \
     && rm -rf /var/lib/apt/lists/*
 
 RUN pip install --no-cache-dir \
