@@ -40,6 +40,7 @@ setup(
             'dummy_imu_odom_name = sensor_bringup.dummy_imu_odom_name:main',
             'odom_to_navsat = sensor_bringup.odom_to_navsat:main',
             'sbg_odom_tf = sensor_bringup.sbg_odom_tf:main',
+            'sbg_diagnostics = sensor_bringup.sbg_diagnostics:main',
         ],
     },
 )

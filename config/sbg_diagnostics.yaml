@@ -1,0 +1,162 @@
+# SBG -> /diagnostics monitor config (consumed by the sensor_bringup
+# 'sbg_diagnostics' node). This is NOT a ROS params file; it is loaded directly
+# by the node via its 'config_file' parameter, so it can hold nested lists.
+#
+# Each entry under 'groups' becomes one DiagnosticStatus on /diagnostics, named
+# "<prefix>: <name>". The status level is the worst of its checks (or STALE if
+# the source topic stops). The diagnostic_aggregator groups everything whose
+# name starts with the prefix into the "SBG" tree (see diagnostic_aggregator.yaml).
+#
+# Check types:
+#   bool : grade a boolean flag.
+#       expect: true|false           # desired value (default true)
+#       level_if_false: WARN|ERROR   # level when value != expect (default WARN)
+#   enum : grade an integer/enum field against value lists.
+#       ok_values / warn_values / error_values: [ints]
+#       else_level: WARN|ERROR       # level for any value not listed (default ERROR)
+#       labels: {int: "name"}        # optional, for nicer display only
+#   max  : warn/error when value rises ABOVE a threshold.
+#   min  : warn/error when value drops BELOW a threshold.
+#       warn: <num>   error: <num>   # either may be omitted
+#       scale: <num>                 # optional multiplier applied before compare/display
+#       units: "<str>"               # optional, display only
+#       invalid_values: [ints]       # optional sentinels (e.g. 0xFF) -> ERROR
+#
+# Field paths are dotted and may descend into submessages/Vector3, e.g.
+# 'status.position_accuracy.x' or 'status_general.main_power'.
+
+settings:
+  diagnostic_name_prefix: "sbg"
+  publish_period_seconds: 1.0
+  # A group whose source topic has no message newer than this is reported STALE.
+  stale_timeout_seconds: 2.0
+
+groups:
+  # ---- EKF solution status (from sbg/ekf_nav -> SbgEkfStatus + accuracies) ----
+  - name: "EKF Status"
+    topic: "sbg/ekf_nav"
+    type: "sbg_driver/msg/SbgEkfNav"
+    checks:
+      - field: status.solution_mode
+        name: "solution mode"
+        type: enum
+        ok_values: [4]        # NAV_POSITION (nominal)
+        warn_values: [2, 3]   # AHRS / NAV_VELOCITY
+        error_values: [0, 1]  # UNINITIALIZED / VERTICAL_GYRO
+        labels:
+          0: UNINITIALIZED
+          1: VERTICAL_GYRO
+          2: AHRS
+          3: NAV_VELOCITY
+          4: NAV_POSITION
+      - field: status.attitude_valid
+        name: "attitude valid"
+        type: bool
+        level_if_false: WARN
+      - field: status.heading_valid
+        name: "heading valid"
+        type: bool
+        level_if_false: WARN
+      - field: status.velocity_valid
+        name: "velocity valid"
+        type: bool
+        level_if_false: WARN
+      - field: status.position_valid
+        name: "position valid"
+        type: bool
+        level_if_false: WARN
+      # 1-sigma EKF position accuracy (North/East), metres.
+      - field: position_accuracy.x
+        name: "pos accuracy north (m)"
+        type: max
+        warn: 3.0
+        error: 7.0
+      - field: position_accuracy.y
+        name: "pos accuracy east (m)"
+        type: max
+        warn: 3.0
+        error: 7.0
+      - field: status.dvl_bt_used
+        name: "DVL bottom used"
+        type: bool
+        level_if_false: WARN
+      - field: status.dvl_wt_used
+        name: "DVL water used"
+        type: bool
+        level_if_false: WARN
+
+  # ---- System / power status (from sbg/status -> SbgStatusGeneral) ----
+  - name: "System Power"
+    topic: "sbg/status"
+    type: "sbg_driver/msg/SbgStatus"
+    checks:
+      - field: status_general.main_power
+        name: "main power"
+        type: bool
+        level_if_false: ERROR
+      - field: status_general.imu_power
+        name: "imu power"
+        type: bool
+        level_if_false: ERROR
+      - field: status_general.gps_power
+        name: "gps power"
+        type: bool
+        level_if_false: ERROR
+      - field: status_general.settings
+        name: "settings loaded"
+        type: bool
+        level_if_false: WARN
+      - field: status_general.temperature
+        name: "temperature in range"
+        type: bool
+        level_if_false: WARN
+      - field: status_general.cpu
+        name: "cpu headroom ok"
+        type: bool
+        level_if_false: WARN
+
+  # ---- GNSS position quality (from sbg/gps_pos) ----
+  - name: "GPS Position"
+    topic: "sbg/gps_pos"
+    type: "sbg_driver/msg/SbgGpsPos"
+    checks:
+      # GNSS fix type: 7 RTK_INT (best), 6 RTK_FLOAT, 3 DGPS, 2 SINGLE, 0 none.
+      - field: status.type
+        name: "fix type"
+        type: enum
+        ok_values: [2, 3, 4, 5, 6, 7]
+        warn_values: [1]
+        error_values: [0]
+        labels:
+          0: NO_SOLUTION
+          1: UNKNOWN
+          2: SINGLE
+          3: PSRDIFF
+          4: SBAS
+          5: OMNISTAR
+          6: RTK_FLOAT
+          7: RTK_INT
+      - field: num_sv_used
+        name: "satellites used"
+        type: min
+        warn: 15
+        error: 8
+        invalid_values: [255]   # 0xFF = N/A
+      # Differential correction age. Field is in 0.01 s units; scale to seconds.
+      - field: diff_age
+        name: "differential age (s)"
+        type: max
+        scale: 0.01
+        units: "s"
+        warn: 5.0
+        error: 30.0
+      - field: position_accuracy.x
+        name: "pos accuracy north (m)"
+        type: max
+        warn: 3.0
+        error: 7.0
+      - field: position_accuracy.y
+        name: "pos accuracy east (m)"
+        type: max
+        warn: 3.0
+        error: 7.0

@@ -1,6 +1,7 @@
-# diagnostic_aggregator config: groups the topic_monitor time-sync statuses
-# (published on /diagnostics with names like "timesync: /topic") into a
-# "Time Sync" category on /diagnostics_agg, which rqt_robot_monitor displays.
+# diagnostic_aggregator config: groups statuses published on /diagnostics into
+# categories on /diagnostics_agg, which rqt_robot_monitor displays.
+#   - topic_monitor time-sync statuses ("timesync: /topic")  -> "Time Sync"
+#   - sbg_diagnostics SBG statuses      ("sbg: ...")          -> "SBG"
 /**:
   ros__parameters:
     path: BlueROV
@@ -10,3 +11,7 @@
         type: diagnostic_aggregator/GenericAnalyzer
         path: Time Sync
         startswith: ['timesync']
+      sbg:
+        type: diagnostic_aggregator/GenericAnalyzer
+        path: SBG
+        startswith: ['sbg']

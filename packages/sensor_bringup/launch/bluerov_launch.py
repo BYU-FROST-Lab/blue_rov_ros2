@@ -72,6 +72,12 @@ def generate_launch_description():
         'config',
         'diagnostic_aggregator.yaml'
     )
+    sbg_diagnostics_config = os.path.join(
+        '/home',
+        'frostlab',
+        'config',
+        'sbg_diagnostics.yaml'
+    )
 
     verbose = "false"  # Default to 'false'
     param_file = '/home/frostlab/config/vehicle_params.yaml'
@@ -256,6 +262,18 @@ def generate_launch_description():
             name='topic_monitor',
             namespace=LaunchConfiguration('namespace'),
             parameters=[time_sync_config],
+            output=output,
+        ),
+
+        # Monitors SBG status/flag messages (EKF status, system power, GPS
+        # accuracy/sats/diff age) and publishes diagnostic_msgs on /diagnostics.
+        # What is checked is data-driven via config/sbg_diagnostics.yaml.
+        launch_ros.actions.Node(
+            package='sensor_bringup',
+            executable='sbg_diagnostics',
+            name='sbg_diagnostics',
+            namespace=LaunchConfiguration('namespace'),
+            parameters=[{'config_file': sbg_diagnostics_config}],
             output=output,
         ),
 
