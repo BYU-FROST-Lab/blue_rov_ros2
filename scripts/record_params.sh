@@ -25,7 +25,9 @@ MAX_CACHE_SIZE=200000000
 # -----------------------------
 # Topic presets
 # -----------------------------
-ALL="-a"
+TOPICS_ALL="-a"
+
+TOPICS_DEBUG="-a -x /bluerov2/oculus_debug*"
 
 TOPICS_REQ="/imu/data /imu/mag /dvl/twist /dvl/data /dvl/position /deep/depth_data /deep/pressure/data /shallow/pressure/data /shallow/depth_data /imu/nav_sat_fix /tf /tf_static"
 
@@ -61,4 +63,4 @@ TOPICS_IMU=" \
 # -----------------------------
 # Default topics (used if no -p or -t)
 # -----------------------------
-TOPICS="${ALL}"
+TOPICS="${TOPICS_DEBUG}"
