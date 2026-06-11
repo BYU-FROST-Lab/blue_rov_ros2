@@ -18,7 +18,7 @@ bluerov2:
       ping_rate: 3
 
       # Range in meters (clamped to hardware limits based on mode)
-      range: 8.0
+      range: 10.0
 
       # Gain percentage (0.0 – 100.0)
       gain: 0.0
@@ -56,4 +56,4 @@ bluerov2:
       gain: 5.0
 
       # Minimum seconds between publishes; 0.0 = publish every ping
-      interval: 0.5
+      interval: 0.2
