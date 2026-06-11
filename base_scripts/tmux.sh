@@ -53,7 +53,7 @@ tmux send-keys -t ${SESSION_NAME}:1.1 \
 tmux send-keys -t ${SESSION_NAME}:1.1 \
   "clear" C-m
 tmux send-keys -t ${SESSION_NAME}:1.1 \
-  "ros2 rqt_reconfigure rqt_reconfigure" 
+  "ros2 run rqt_reconfigure rqt_reconfigure" 
 
 # Select the first window
 tmux select-window -t ${SESSION_NAME}:0
