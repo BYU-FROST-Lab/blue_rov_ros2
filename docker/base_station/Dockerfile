@@ -16,11 +16,11 @@ RUN apt update && apt install -y \
     ros-${ROS_DISTRO}-rqt* \
     ros-${ROS_DISTRO}-diagnostic-aggregator \
     ros-${ROS_DISTRO}-image-transport-plugins \
+    ros-${ROS_DISTRO}-plotjuggler-ros \
     # x11-apps \
     # x11-utils \
     # x11-xserver-utils \
     # xauth \
-    # ros-${ROS_DISTRO}-rqt* \
     && rm -rf /var/lib/apt/lists/*
 
 USER ${LABNAME}
