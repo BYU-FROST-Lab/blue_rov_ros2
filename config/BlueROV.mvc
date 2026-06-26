@@ -7,8 +7,8 @@ enable_antialiasing: true
 show_displays: true
 show_status_bar: true
 show_capture_tools: true
-window_width: 2748
-window_height: 1482
+window_width: 1848
+window_height: 1016
 view_scale: 0.374675423
 offset_x: -264.747528
 offset_y: 118.378883
@@ -101,25 +101,6 @@ displays:
       qos_history: 1
       qos_reliability: 1
       qos_durability: 2
-  - type: mapviz_plugins/image
-    name: Oculus Sonar
-    config:
-      visible: true
-      collapsed: true
-      topic: /bluerov2/oculus_debug_image
-      anchor: top right
-      units: percent
-      offset_x: 0
-      offset_y: 0
-      width: 44.5
-      height: 75.700000000000003
-      keep_ratio: true
-      rotation: 0
-      image_transport: default
-      qos_depth: 10
-      qos_history: 1
-      qos_reliability: 1
-      qos_durability: 2
   - type: mapviz_plugins/attitude_indicator
     name: Attitude
     config:
@@ -134,3 +115,8 @@ displays:
       qos_history: 1
       qos_reliability: 1
       qos_durability: 2
+  - type: cougars_mapviz/cougars_waypoints
+    name: Waypoints
+    config:
+      visible: true
+      collapsed: false
