@@ -1,8 +1,8 @@
 import launch
 import launch_ros.actions
-from launch_ros.actions import Node
+from launch_ros.actions import Node, PushRosNamespace
 import launch_ros.descriptions
-from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
+from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, GroupAction
 from launch.substitutions import LaunchConfiguration
 from launch.conditions import IfCondition, UnlessCondition
 
@@ -78,6 +78,8 @@ def generate_launch_description():
         'config',
         'sbg_diagnostics.yaml'
     )
+    coug_fgo_dir = get_package_share_directory("coug_fgo")
+    coug_fgo_launch_dir = os.path.join(coug_fgo_dir, "launch")
 
     verbose = "false"  # Default to 'false'
     param_file = '/home/frostlab/config/vehicle_params.yaml'
@@ -89,6 +91,7 @@ def generate_launch_description():
 
     launch_actions = []
     namespace = LaunchConfiguration('namespace')
+    sim = LaunchConfiguration('use_sim_time')
 
     launch_actions.extend([
         DeclareLaunchArgument('namespace', default_value='bluerov2'),
@@ -131,13 +134,27 @@ def generate_launch_description():
         ),
 
         # Map to DVL odom frame handling with GPS and IMU. 
-        Node(
-            package='robot_localization',
-            executable='ekf_node',
-            name='ekf_filter_node_map',
-            parameters=[param_file],
-            namespace=namespace,
-            remappings=[('odometry/filtered', 'odometry/global')]    
+        # Node(
+        #     package='robot_localization',
+        #     executable='ekf_node',
+        #     name='ekf_filter_node_map',
+        #     parameters=[param_file],
+        #     namespace=namespace,
+        #     remappings=[('odometry/filtered', 'odometry/global')]    
+        # ),
+        GroupAction(
+            actions=[
+                PushRosNamespace(namespace),
+                IncludeLaunchDescription(
+                    PythonLaunchDescriptionSource(
+                        os.path.join(coug_fgo_launch_dir, "blue_fgo.launch.py")
+                    ),
+                    launch_arguments={
+                        "use_sim_time": sim,
+                        "auv_ns": namespace,
+                    }.items(),
+                ),
+            ]
         ),
 
         # launch_ros.actions.Node(
@@ -238,13 +255,13 @@ def generate_launch_description():
             parameters=[{'robot_description': robot_description}],
         ),
 
-        # Republish imu/odometry as odom -> bluerov2/base_link TF
-        launch_ros.actions.Node(
-            package='sensor_bringup',
-            executable='sbg_odom_tf',
-            name='sbg_odom_tf',
-            namespace=LaunchConfiguration('namespace'),
-        ),
+        # # Republish imu/odometry as odom -> bluerov2/base_link TF
+        # launch_ros.actions.Node(
+        #     package='sensor_bringup',
+        #     executable='sbg_odom_tf',
+        #     name='sbg_odom_tf',
+        #     namespace=LaunchConfiguration('namespace'),
+        # ),
 
         # map -> odom identity (datum = map origin; separate frames for future EKF)
         launch_ros.actions.Node(
