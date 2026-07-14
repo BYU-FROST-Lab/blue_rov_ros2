@@ -101,25 +101,6 @@ displays:
       qos_history: 1
       qos_reliability: 1
       qos_durability: 2
-  - type: mapviz_plugins/image
-    name: Oculus Sonar
-    config:
-      visible: true
-      collapsed: true
-      topic: /bluerov2/oculus_debug_image
-      anchor: top right
-      units: percent
-      offset_x: 0
-      offset_y: 0
-      width: 44.5
-      height: 74.700000000000003
-      keep_ratio: true
-      rotation: 0
-      image_transport: default
-      qos_depth: 10
-      qos_history: 1
-      qos_reliability: 1
-      qos_durability: 2
   - type: mapviz_plugins/attitude_indicator
     name: Attitude
     config:
