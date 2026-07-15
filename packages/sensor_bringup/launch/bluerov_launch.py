@@ -78,7 +78,8 @@ def generate_launch_description():
         'config',
         'sbg_diagnostics.yaml'
     )
-    coug_fgo_dir = get_package_share_directory("coug_fgo")
+    # Fix moved to sensor brignup temp
+    coug_fgo_dir = get_package_share_directory("sensor_bringup")
     coug_fgo_launch_dir = os.path.join(coug_fgo_dir, "launch")
 
     verbose = "false"  # Default to 'false'
