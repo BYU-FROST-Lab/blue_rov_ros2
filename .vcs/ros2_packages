@@ -2,7 +2,7 @@ repositories:
   time_sync_utils:
     type: git
     url: https://github.com/BYU-FRoSt-Lab/time_sync_utils.git
-    version: main
+    version: continuous_run
   dvl-a50:
     type: git
     url: https://github.com/BradenMeyers/dvl-a50.git
@@ -23,14 +23,22 @@ repositories:
     type: git
     url: https://github.com/BYU-FROST-Lab/Sonar-3D-15-ROS-driver.git
     version: main
-  cougars-ros2:
+  cougars_interfaces:
     type: git
-    url: https://github.com/BYU-FRoSt-Lab/cougars-ros2.git
-    version: waypoint
+    url: https://github.com/BYU-FRoSt-Lab/cougars_interfaces.git
+    version: main
+  # cougars_mapviz:
+  #   type: git
+  #   url: https://github.com/BYU-FRoSt-Lab/cougars_mapviz.git
+  #   version: main
   blueprint_oculus:
     type: git
     url: git@bitbucket.org:frostlab/blueprint_oculus_sonar_driver.git
     version: ros2_driver
+  blueprint_oculus_driver_msgs:
+    type: git
+    url: git@github.com:BYU-FRoSt-Lab/blueprint_oculus_sonar_driver_msgs.git
+    version: master
   # seatrac:
   #   type: git
   #   url: https://github.com/BYU-FRoSt-Lab/seatrac-ros2.git
