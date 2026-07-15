@@ -33,3 +33,18 @@
   longitude: -113.388518
   altitude: 906.0
   heading: 0.0
+- name: kahana
+  latitude: 21.558635
+  longitude: -157.875729
+  altitude: 0.0
+  heading: 0.0
+- name: haleiwa
+  latitude: 21.595392
+  longitude: -158.106583
+  altitude: 0.0
+  heading: 0.0
+- name: punaluu
+  latitude: 21.586095
+  longitude: -157.885222
+  altitude: 0.0
+  heading: 0.0
