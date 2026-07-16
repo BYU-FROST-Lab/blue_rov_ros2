@@ -1,0 +1,24 @@
+/**:
+  ros__parameters:
+    video_device: "/dev/dwe_stellar"
+    image_width: 1600
+    image_height: 1200
+    framerate: 15.0
+    pixel_format: "mjpeg2rgb"   # decoded rgb8 output, easiest for a first test
+    io_method: "mmap"
+    camera_name: "stellarhd"
+    camera_frame_id: "stellarhd_optical"
+    camera_info_url: ""         # leave blank until you've calibrated
+
+#yuyv
+# /**:
+#   ros__parameters:
+#     video_device: "/dev/dwe_stellar"
+#     image_width: 1600
+#     image_height: 1200
+#     framerate: 5.0
+#     pixel_format: "yuyv"       # native passthrough, no decode
+#     io_method: "mmap"
+#     camera_name: "stellarhd"
+#     camera_frame_id: "stellarhd_optical"
+#     camera_info_url: ""
