@@ -13,25 +13,26 @@
 # limitations under the License.
 
 from launch import LaunchDescription
-from launch_ros.actions import Node
 from launch.actions import DeclareLaunchArgument
 from launch.conditions import IfCondition
 from launch.substitutions import (
     EnvironmentVariable,
     EqualsSubstitution,
     LaunchConfiguration,
-    OrSubstitution,
     PathJoinSubstitution,
     PythonExpression,
 )
+from launch_ros.actions import Node
 
 
 def generate_launch_description() -> LaunchDescription:
-
     use_sim_time = LaunchConfiguration("use_sim_time")
     auv_ns = LaunchConfiguration("auv_ns")
-    compare = LaunchConfiguration("compare")
+    loc_comparison = LaunchConfiguration("loc_comparison")
+    lead_agent = LaunchConfiguration("lead_agent")
     config_dir = "/home/frostlab/config"
+
+    is_lead_agent = EqualsSubstitution(auv_ns, lead_agent)
 
     fleet_params = PathJoinSubstitution(
         [
@@ -39,7 +40,12 @@ def generate_launch_description() -> LaunchDescription:
             "coug_fgo_params.yaml",
         ]
     )
-    
+    # auv_params = PathJoinSubstitution(
+    #     [
+    #         EnvironmentVariable("CONFIG_DIR"),
+    #         PythonExpression(["'", auv_ns, "' + '_params.yaml'"]),
+    #     ]
+    # )
 
     odom_frame = PythonExpression(
         ["'", auv_ns, "/odom' if '", auv_ns, "' != '' else 'odom'"]
@@ -128,9 +134,14 @@ def generate_launch_description() -> LaunchDescription:
                 description="Namespace for the AUV (e.g. auv0)",
             ),
             DeclareLaunchArgument(
-                "compare",
+                "loc_comparison",
                 default_value="false",
                 description="Launch additional localization nodes if true",
+            ),
+            DeclareLaunchArgument(
+                "lead_agent",
+                default_value="",
+                description="Namespace of the lead agent (optional)",
             ),
             Node(
                 package="coug_fgo",
@@ -138,6 +149,7 @@ def generate_launch_description() -> LaunchDescription:
                 name="factor_graph_node",
                 parameters=[
                     fleet_params,
+                    # auv_params,
                     {
                         "use_sim_time": use_sim_time,
                         "map_frame": "map",
@@ -151,112 +163,125 @@ def generate_launch_description() -> LaunchDescription:
                         "mag.parameter_frame": imu_link_frame,
                         "ahrs.parameter_frame": imu_link_frame,
                         "dynamics.parameter_frame": com_link_frame,
+                        "multiagent.parameter_frame": modem_link_frame,
+                        "multiagent.enable_multiagent": is_lead_agent,
                     },
                 ],
             ),
-            # iSAM2 (comparison)
-            Node(
-                package="coug_fgo",
-                executable="factor_graph",
-                name="factor_graph_node_isam2",
-                condition=IfCondition(compare),
-                parameters=[
-                    fleet_params,
-                    {
-                        "use_sim_time": use_sim_time,
-                        "map_frame": "map",
-                        "odom_frame": odom_frame,
-                        "base_frame": base_link_frame,
-                        "target_frame": dvl_link_frame,
-                        "imu.parameter_frame": imu_link_frame,
-                        "dvl.parameter_frame": dvl_link_frame,
-                        "depth.parameter_frame": depth_link_frame,
-                        "gps.parameter_frame": gps_link_frame,
-                        "mag.parameter_frame": imu_link_frame,
-                        "ahrs.parameter_frame": imu_link_frame,
-                        "dynamics.parameter_frame": com_link_frame,
-                        "global_odom_topic": "odometry/global_isam2",
-                        "smoothed_path_topic": "smoothed_path_isam2",
-                        "publish_global_tf": False,
-                        "publish_smoothed_path": False,
-                        "solver_type": "ISAM2",
-                    },
-                ],
-            ),
-            # TURTLMap (comparison)
-            Node(
-                package="coug_fgo",
-                executable="factor_graph",
-                name="factor_graph_node_lpi",
-                condition=IfCondition(compare),
-                parameters=[
-                    fleet_params,
-                    {
-                        "use_sim_time": use_sim_time,
-                        "map_frame": "map",
-                        "odom_frame": odom_frame,
-                        "base_frame": base_link_frame,
-                        "target_frame": dvl_link_frame,
-                        "imu.parameter_frame": imu_link_frame,
-                        "dvl.parameter_frame": dvl_link_frame,
-                        "depth.parameter_frame": depth_link_frame,
-                        "gps.parameter_frame": gps_link_frame,
-                        "mag.parameter_frame": imu_link_frame,
-                        "ahrs.parameter_frame": imu_link_frame,
-                        "dynamics.parameter_frame": com_link_frame,
-                        "global_odom_topic": "odometry/global_lpi",
-                        "smoothed_path_topic": "smoothed_path_lpi",
-                        "publish_global_tf": False,
-                        "comparison.enable_loose_dvl_preintegration": True,
-                    },
-                ],
-            ),
-            # AQUA-SLAM (comparison)
-            Node(
-                package="coug_fgo",
-                executable="factor_graph",
-                name="factor_graph_node_tpi",
-                condition=IfCondition(compare),
-                parameters=[
-                    fleet_params,
-                    {
-                        "use_sim_time": use_sim_time,
-                        "map_frame": "map",
-                        "odom_frame": odom_frame,
-                        "base_frame": base_link_frame,
-                        "target_frame": dvl_link_frame,
-                        "imu.parameter_frame": imu_link_frame,
-                        "dvl.parameter_frame": dvl_link_frame,
-                        "depth.parameter_frame": depth_link_frame,
-                        "gps.parameter_frame": gps_link_frame,
-                        "mag.parameter_frame": imu_link_frame,
-                        "ahrs.parameter_frame": imu_link_frame,
-                        "dynamics.parameter_frame": com_link_frame,
-                        "global_odom_topic": "odometry/global_tpi",
-                        "smoothed_path_topic": "smoothed_path_tpi",
-                        "publish_global_tf": False,
-                        "comparison.enable_tight_dvl_preintegration": True,
-                    },
-                ],
-            ),
-            Node(
-                package="coug_fgo",
-                executable="dvl_a50_twist",
-                name="dvl_a50_twist_node",
-                parameters=[
-                    fleet_params,
-                    {
-                        "use_sim_time": use_sim_time,
-                        "parameter_frame": dvl_link_frame,
-                    },
-                ],
-            ),
+            # # iSAM2 (comparison)
+            # Node(
+            #     package="coug_fgo",
+            #     executable="factor_graph",
+            #     name="factor_graph_node_isam2",
+            #     condition=IfCondition(loc_comparison),
+            #     parameters=[
+            #         fleet_params,
+            #         auv_params,
+            #         {
+            #             "use_sim_time": use_sim_time,
+            #             "map_frame": "map",
+            #             "odom_frame": odom_frame,
+            #             "base_frame": base_link_frame,
+            #             "target_frame": dvl_link_frame,
+            #             "imu.parameter_frame": imu_link_frame,
+            #             "dvl.parameter_frame": dvl_link_frame,
+            #             "depth.parameter_frame": depth_link_frame,
+            #             "gps.parameter_frame": gps_link_frame,
+            #             "mag.parameter_frame": imu_link_frame,
+            #             "ahrs.parameter_frame": imu_link_frame,
+            #             "dynamics.parameter_frame": com_link_frame,
+            #             "multiagent.parameter_frame": modem_link_frame,
+            #             "multiagent.enable_multiagent": is_lead_agent,
+            #             "global_odom_topic": "odometry/global_isam2",
+            #             "smoothed_path_topic": "smoothed_path_isam2",
+            #             "publish_global_tf": False,
+            #             "publish_smoothed_path": False,
+            #             "solver_type": "ISAM2",
+            #         },
+            #     ],
+            # ),
+            # # Loosely-coupled DVL preintegration (comparison)
+            # Node(
+            #     package="coug_fgo",
+            #     executable="factor_graph",
+            #     name="factor_graph_node_lpi",
+            #     condition=IfCondition(loc_comparison),
+            #     parameters=[
+            #         fleet_params,
+            #         auv_params,
+            #         {
+            #             "use_sim_time": use_sim_time,
+            #             "map_frame": "map",
+            #             "odom_frame": odom_frame,
+            #             "base_frame": base_link_frame,
+            #             "target_frame": dvl_link_frame,
+            #             "imu.parameter_frame": imu_link_frame,
+            #             "dvl.parameter_frame": dvl_link_frame,
+            #             "depth.parameter_frame": depth_link_frame,
+            #             "gps.parameter_frame": gps_link_frame,
+            #             "mag.parameter_frame": imu_link_frame,
+            #             "ahrs.parameter_frame": imu_link_frame,
+            #             "dynamics.parameter_frame": com_link_frame,
+            #             "multiagent.parameter_frame": modem_link_frame,
+            #             "multiagent.enable_multiagent": is_lead_agent,
+            #             "global_odom_topic": "odometry/global_lpi",
+            #             "smoothed_path_topic": "smoothed_path_lpi",
+            #             "publish_global_tf": False,
+            #             "comparison.enable_loose_dvl_preintegration": True,
+            #         },
+            #     ],
+            # ),
+            # # Tightly-coupled DVL preintegration (comparison)
+            # Node(
+            #     package="coug_fgo",
+            #     executable="factor_graph",
+            #     name="factor_graph_node_tpi",
+            #     condition=IfCondition(loc_comparison),
+            #     parameters=[
+            #         fleet_params,
+            #         auv_params,
+            #         {
+            #             "use_sim_time": use_sim_time,
+            #             "map_frame": "map",
+            #             "odom_frame": odom_frame,
+            #             "base_frame": base_link_frame,
+            #             "target_frame": dvl_link_frame,
+            #             "imu.parameter_frame": imu_link_frame,
+            #             "dvl.parameter_frame": dvl_link_frame,
+            #             "depth.parameter_frame": depth_link_frame,
+            #             "gps.parameter_frame": gps_link_frame,
+            #             "mag.parameter_frame": imu_link_frame,
+            #             "ahrs.parameter_frame": imu_link_frame,
+            #             "dynamics.parameter_frame": com_link_frame,
+            #             "multiagent.parameter_frame": modem_link_frame,
+            #             "multiagent.enable_multiagent": is_lead_agent,
+            #             "global_odom_topic": "odometry/global_tpi",
+            #             "smoothed_path_topic": "smoothed_path_tpi",
+            #             "publish_global_tf": False,
+            #             "comparison.enable_tight_dvl_preintegration": True,
+            #         },
+            #     ],
+            # ),
+            # Node(
+            #     package="coug_fgo",
+            #     executable="dvl_a50_twist",
+            #     name="dvl_a50_twist_node",
+            #     parameters=[
+            #         fleet_params,
+            #         auv_params,
+            #         {
+            #             "use_sim_time": use_sim_time,
+            #             "parameter_frame": dvl_link_frame,
+            #         },
+            #     ],
+            # ),
             # Node(
             #     package="coug_fgo",
             #     executable="dvl_a50_odom",
             #     name="dvl_a50_odom_node",
             #     parameters=[
             #         fleet_params,
+            #         auv_params,
             #         {
             #             "use_sim_time": use_sim_time,
             #             "odom_frame": "map",
@@ -271,6 +296,7 @@ def generate_launch_description() -> LaunchDescription:
             #     name="fluid_pressure_odom_node",
             #     parameters=[
             #         fleet_params,
+            #         auv_params,
             #         {
             #             "use_sim_time": use_sim_time,
             #             "map_frame": "map",
@@ -278,14 +304,13 @@ def generate_launch_description() -> LaunchDescription:
             #         },
             #     ],
             # ),
-            # WHAT ARE THE DIFFERENCE BETWEEN THIS AND GPS ODOM? 
-            # ORIGIN SETTING
             Node(
                 package="coug_fgo",
                 executable="navsat_odom",
                 name="navsat_odom_node",
                 parameters=[
                     fleet_params,
+                    # auv_params,
                     {
                         "use_sim_time": use_sim_time,
                         "map_frame": "map",
@@ -295,10 +320,23 @@ def generate_launch_description() -> LaunchDescription:
             ),
             # Node(
             #     package="coug_fgo",
+            #     executable="sbg_imu_mag",
+            #     name="sbg_imu_mag_node",
+            #     parameters=[
+            #         fleet_params,
+            #         auv_params,
+            #         {
+            #             "use_sim_time": use_sim_time,
+            #         },
+            #     ],
+            # ),
+            # Node(
+            #     package="coug_fgo",
             #     executable="seatrac_x150_imu",
             #     name="seatrac_x150_imu_node",
             #     parameters=[
             #         fleet_params,
+            #         auv_params,
             #         {
             #             "use_sim_time": use_sim_time,
             #             "parameter_frame": modem_link_frame,
@@ -311,6 +349,7 @@ def generate_launch_description() -> LaunchDescription:
             #     name="seatrac_imu_ned_to_enu_node",
             #     parameters=[
             #         fleet_params,
+            #         auv_params,
             #         {
             #             "use_sim_time": use_sim_time,
             #         },
@@ -322,6 +361,7 @@ def generate_launch_description() -> LaunchDescription:
             #     name="imu_ned_to_enu_node",
             #     parameters=[
             #         fleet_params,
+            #         auv_params,
             #         {
             #             "use_sim_time": use_sim_time,
             #         },
@@ -333,6 +373,7 @@ def generate_launch_description() -> LaunchDescription:
             #     name="odom_ned_to_enu_node",
             #     parameters=[
             #         fleet_params,
+            #         auv_params,
             #         {
             #             "use_sim_time": use_sim_time,
             #         },
@@ -344,75 +385,12 @@ def generate_launch_description() -> LaunchDescription:
             #     name="gps_to_truth_relay",
             #     parameters=[
             #         fleet_params,
+            #         auv_params,
             #         {
             #             "use_sim_time": use_sim_time,
             #         },
             #     ],
             #     condition=IfCondition(EqualsSubstitution(auv_ns, "bluerov2")),
-            # ),
-            # Node(
-            #     package="tf2_ros",
-            #     executable="static_transform_publisher",
-            #     name="map_to_aquaslam_odom_transform",
-            #     arguments=[
-            #         # AQUA-SLAM's orientations and positions are in different frames
-            #         # This just corrects the position
-            #         "--x",
-            #         "0.0",
-            #         "--y",
-            #         "0.0",
-            #         "--z",
-            #         "0.0",
-            #         "--roll",
-            #         "-1.57079632679",
-            #         "--pitch",
-            #         "0.0",
-            #         "--yaw",
-            #         "-1.57079632679",
-            #         "--frame-id",
-            #         "map",
-            #         "--child-frame-id",
-            #         "aquaslam_odom",
-            #     ],
-            #     parameters=[{"use_sim_time": use_sim_time}],
-            #     condition=IfCondition(
-            #         OrSubstitution(
-            #             EqualsSubstitution(auv_ns, "aquaslam"),
-            #             EqualsSubstitution(auv_ns, "aquaslam_wt"),
-            #         )
-            #     ),
-            # ),
-            # Node(
-            #     package="tf2_ros",
-            #     executable="static_transform_publisher",
-            #     name="map_to_apriltag_odom_transform",
-            #     arguments=[
-            #         # AQUA-SLAM's orientations and positions are in different frames
-            #         # This just corrects the position
-            #         "--x",
-            #         "0.0",
-            #         "--y",
-            #         "0.0",
-            #         "--z",
-            #         "0.0",
-            #         "--roll",
-            #         "-1.57079632679",
-            #         "--pitch",
-            #         "0.0",
-            #         "--yaw",
-            #         "-1.57079632679",
-            #         "--frame-id",
-            #         "map",
-            #         "--child-frame-id",
-            #         "apriltag_odom",
-            #     ],
-            #     parameters=[{"use_sim_time": use_sim_time}],
-            #     condition=IfCondition(
-            #         OrSubstitution(
-            #             EqualsSubstitution(auv_ns, "aquaslam"),
-            #             EqualsSubstitution(auv_ns, "aquaslam_wt"),
-            #         )
-            #     ),
             # ),
             # --- Robot Localization Pipeline ---
             # https://docs.ros.org/en/melodic/api/robot_localization/html/state_estimation_nodes.html
@@ -422,6 +400,7 @@ def generate_launch_description() -> LaunchDescription:
                 name="ekf_filter_node_odom",
                 parameters=[
                     fleet_params,
+                    # auv_params,
                     {
                         "use_sim_time": use_sim_time,
                         "odom_frame": odom_frame,
@@ -431,14 +410,15 @@ def generate_launch_description() -> LaunchDescription:
                 ],
                 remappings=[("odometry/filtered", "odometry/local")],
             ),
-            # https://docs.ros.org/en/melodic/api/robot_localization/html/state_estimation_nodes.html
+            # # https://docs.ros.org/en/melodic/api/robot_localization/html/state_estimation_nodes.html
             # Node(
             #     package="robot_localization",
             #     executable="ekf_node",
             #     name="ekf_filter_node_map",
-            #     condition=IfCondition(compare),
+            #     condition=IfCondition(loc_comparison),
             #     parameters=[
             #         fleet_params,
+            #         auv_params,
             #         {
             #             "use_sim_time": use_sim_time,
             #             "map_frame": "map",
@@ -454,9 +434,10 @@ def generate_launch_description() -> LaunchDescription:
             #     package="robot_localization",
             #     executable="ukf_node",
             #     name="ukf_filter_node_map",
-            #     condition=IfCondition(compare),
+            #     condition=IfCondition(loc_comparison),
             #     parameters=[
             #         fleet_params,
+            #         auv_params,
             #         {
             #             "use_sim_time": use_sim_time,
             #             "map_frame": "map",
