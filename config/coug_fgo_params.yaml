@@ -3,15 +3,17 @@
     # --- Node Settings ---
     publish_global_tf: true # Publish the map -> odom transform.
     publish_smoothed_path: true # Publish the full smoothed path for visualization.
-    publish_velocity: true # Publish the estimated velocity (at the target frame in the map frame).
+    publish_velocity: true # Publish the estimated velocity (of the target frame in the map frame).
     publish_imu_bias: true # Publish the estimated IMU biases (accel + gyro).
+    publish_mag_bias: true # Publish the estimated magnetometer hard-iron bias.
     publish_diagnostics: true # Publish diagnostic information.
     publish_graph_metrics: true # Publish high-frequency timing and graph metadata.
 
     # These are computationally expensive to calculate, so disable if not needed.
-    publish_pose_cov: true # Publish the pose covariance along with the pose.
-    publish_velocity_cov: false # Publish the velocity covariance along with the velocity.
-    publish_imu_bias_cov: false # Publish the IMU bias covariance along with the bias.
+    publish_pose_cov: true # Publish the pose covariance.
+    publish_velocity_cov: false # Publish the velocity covariance.
+    publish_imu_bias_cov: false # Publish the IMU bias covariance.
+    publish_mag_bias_cov: false # Publish the magnetometer hard-iron bias covariance.
 
     # --- GTSAM Smoother Settings ---
     #
@@ -23,7 +25,7 @@
     solver_type: "IncrementalFixedLagSmoother"
     max_update_rate_hz: -1.0 # [Hz] Maximum keyframe rate. -1.0 for no limit.
     max_opt_rate_hz: -1.0 # [Hz] Maximum optimization rate. -1.0 for no limit.
-    smoother_lag: 20.0 # The time window (in seconds) of past states to smooth over.
+    smoother_lag: 20.0 # [s] Time window of past states to smooth over.
     relinearize_threshold: 0.1 # Lower values are more accurate but slower.
     relinearize_skip: 1 # Number of updates to skip between relinearizations.
 
@@ -38,23 +40,28 @@
     keyframe_source: "DVL"
     backup_keyframe_source: "Depth" # Fallback source if the primary source drops out.
     keyframe_timeout_sec: 0.5 # [s] Time before determining the primary source has dropped out.
-    keyframe_timer_hz: 10.0 # [Hz] Period of the periodic timer (if "Timer" is used).
+    keyframe_timer_hz: 10.0 # [Hz] Rate of the periodic keyframe timer (if "Timer" is used).
+    min_keyframe_interval_sec: 0.02 # [s] Minimum time between consecutive keyframes.
 
     # --- ROS Topics and Frames ---
     imu_topic: "imu/data"
-    gps_odom_topic: "odometry/gps"
+    gps_odom_topic: "gps/odometry"
     depth_odom_topic: "shallow/depth/odom"
     mag_topic: "imu/mag"
     ahrs_topic: "imu/data"
     dvl_topic: "dvl/twist"
     wrench_topic: "cmd_wrench"
+    multiagent_topics: ["/coug2sim/base/agent/status", "/coug3sim/base/agent/status"]
     global_odom_topic: "odometry/global"
     smoothed_path_topic: "smoothed_path"
     velocity_topic: "~/velocity" # At the target frame in the map frame.
     # Topic for the IMU bias. Published as a TwistWithCovarianceStamped,
     # where 'linear' holds accelerometer bias and 'angular' holds gyroscope bias.
+    # Preserves accel/gyro cross-covariance; sensor_msgs/Imu has no field for that.
     imu_bias_topic: "~/imu/bias"
+    mag_bias_topic: "~/imu/mag/bias"
     graph_metrics_topic: "~/metrics"
+    reset_service: "~/reset"
 
     # --- Factor Settings ---
     #
@@ -66,38 +73,47 @@
     base:
       use_parameter_tf: false
       parameter_tf: # Relative to the target frame.
-        position: [0.27161, -0.10886, -0.01984] # [x, y, z]
-        orientation: [1.0, 0.0, 0.0, 0.0] # [qx, qy, qz, qw]
+        position: [0.0, 0.0, 0.0] # [x, y, z]
+        orientation: [0.0, 0.0, 0.0, 1.0] # [qx, qy, qz, qw]
 
     imu:
       use_parameter_frame: false
       use_parameter_tf: false
       parameter_tf: # Relative to the target frame.
-        position: [0.27161, -0.10886, -0.01984] # [x, y, z]
-        orientation: [1.0, 0.0, 0.0, 0.0] # [qx, qy, qz, qw]
+        position: [0.0, 0.0, 0.0] # [x, y, z]
+        orientation: [0.0, 0.0, 0.0, 1.0] # [qx, qy, qz, qw]
       covariance_scalar: 1.0 # Applies to both sensor-reported and parameter_covariance values.
+      # Used to convert sensor-reported discrete covariances to continuous-time densities.
+      sensor_rate_hz: 200.0 # [Hz] IMU output rate (SBG log_imu_data: 1 = 200 Hz).
       use_parameter_covariance: true
       parameter_covariance:
-        accel_noise_sigmas: [0.0078, 0.0078, 0.0078] # [m/s^2] Accelerometer measurement noise sigmas.
-        gyro_noise_sigmas: [0.0012, 0.0012, 0.0012] # [rad/s] Gyroscope measurement noise sigmas.
-      accel_bias_rw_sigmas: [0.000105, 0.000105, 0.000105] # [m/s^2/√s] Continuous-time spectral density sigmas for accelerometer bias random walk.
-      gyro_bias_rw_sigmas: [0.0000391, 0.0000391, 0.0000391] # [rad/s/√s] Continuous-time spectral density sigmas for gyroscope bias random walk.
-      integration_covariance: 0.00001 # A small covariance for the integration process itself.
-      gravity: [0.0, 0.0, -9.81] # [m/s^2]
+        # SBG Ellipse-N: 57 µg/√Hz accel, 0.18 °/√h gyro noise density.
+        # https://support.sbg-systems.com/sc/el/latest/ellipse-documentation/performance-specifications
+        accel_noise_sigmas: [5.6e-4, 5.6e-4, 5.6e-4] # [m/s^2/√Hz] Accelerometer noise density sigmas.
+        gyro_noise_sigmas: [5.24e-5, 5.24e-5, 5.24e-5] # [rad/s/√Hz] Gyroscope noise density sigmas.
+      # Derived from the SBG Ellipse-N in-run bias instabilities (14 µg accel, 7 °/h gyro).
+      # https://support.sbg-systems.com/sc/el/latest/ellipse-documentation/performance-specifications
+      # Gauss-Markov fit K ≈ 2.3 * B / √tau_c at tau_c = 500 s.
+      accel_bias_rw_sigmas: [1.4e-5, 1.4e-5, 1.4e-5] # [m/s^2/√s] Continuous-time spectral density sigmas for accelerometer bias random walk.
+      gyro_bias_rw_sigmas: [3.5e-6, 3.5e-6, 3.5e-6] # [rad/s/√s] Continuous-time spectral density sigmas for gyroscope bias random walk.
+      integration_covariance: 1.0e-8 # A small covariance for the integration process itself.
+      gravity: [0.0, 0.0, -9.8] # [m/s^2] HoloOcean gravity vector
       diagnostic_timeout_sec: 1.0 # [s]
 
     gps:
-      enable_gps: false
+      enable_gps: true
       enable_gps_init_only: false
       use_parameter_frame: false
       use_parameter_tf: false
       parameter_tf: # Relative to the target frame.
-        position: [0.15391, 0.09837, -0.42003] # [x, y, z]
-        orientation: [1.0, 0.0, 0.0, 0.0] # [qx, qy, qz, qw]
+        position: [0.0, 0.0, 0.0] # [x, y, z]
+        orientation: [0.0, 0.0, 0.0, 1.0] # [qx, qy, qz, qw]
       covariance_scalar: 1.0 # Applies to both sensor-reported and parameter_covariance values.
       use_parameter_covariance: false
       parameter_covariance:
-        position_noise_sigmas: [0.015, 0.015] # [m] GPS position uncertainty sigmas.
+        # SBG Ellipse-N internal GNSS, RTK: 1 cm + 1 ppm horizontal position accuracy.
+        # https://www.sbg-systems.com/ins/ellipse-n/
+        position_noise_sigmas: [0.015, 0.015] # [east, north] [m] GPS position uncertainty sigmas.
       diagnostic_timeout_sec: 2.0 # [s]
       robust_kernel: "None"
       robust_k: 1.345
@@ -108,11 +124,13 @@
       use_parameter_frame: false
       use_parameter_tf: false
       parameter_tf: # Relative to the target frame.
-        position: [0.27161, -0.10886, -0.01984] # [x, y, z]
-        orientation: [1.0, 0.0, 0.0, 0.0] # [qx, qy, qz, qw]
+        position: [0.0, 0.0, 0.0] # [x, y, z]
+        orientation: [0.0, 0.0, 0.0, 1.0] # [qx, qy, qz, qw]
       covariance_scalar: 1.0 # Applies to both sensor-reported and parameter_covariance values.
-      use_parameter_covariance: false
+      use_parameter_covariance: true
       parameter_covariance:
+        # TE MS5837-02BA (Bar02, "shallow" sensor): ±2 mbar (~2 cm H2O) accuracy over 0-60 °C.
+        # https://www.te.com/en/product-CAT-BLPS0059.html
         position_z_noise_sigma: 0.02 # [m] Depth sensor Z-position uncertainty sigma.
       diagnostic_timeout_sec: 1.0 # [s]
       robust_kernel: "None"
@@ -120,39 +138,45 @@
 
     mag:
       enable_mag: false
-      enable_mag_init_only: false
+      estimate_hard_iron_bias: true # Estimate a constant hard iron bias across the mission
       use_parameter_frame: false
       use_parameter_tf: false
       parameter_tf: # Relative to the target frame.
-        position: [0.27161, -0.10886, -0.01984] # [x, y, z]
-        orientation: [1.0, 0.0, 0.0, 0.0] # [qx, qy, qz, qw]
+        position: [0.0, 0.0, 0.0] # [x, y, z]
+        orientation: [0.0, 0.0, 0.0, 1.0] # [qx, qy, qz, qw]
       covariance_scalar: 1.0 # Applies to both sensor-reported and parameter_covariance values.
-      use_parameter_covariance: true
+      use_parameter_covariance: false
       parameter_covariance:
-        magnetic_field_noise_sigmas: [0.003, 0.003, 0.003] # [normalized] Magnetic field uncertainty sigmas.
+        # SBG Ellipse magnetometer: 3 mGauss RMS noise -> 3e-07 T.
+        # https://support.sbg-systems.com/sc/el/latest/ellipse-documentation/hardware-documentation/aiding-sensors
+        magnetic_field_noise_sigmas: [3.0e-07, 3.0e-07, 3.0e-07] # [T] Magnetic field uncertainty sigmas.
       # https://www.ngdc.noaa.gov/geomag/calculators/magcalc.shtml#igrfwmm
       # WMMHR-2025 (40.2406 N, 111.741 W, 2026-01-23)
       # North: 20,842.3 nT, East: 3,963.4 nT, Vertical: 45,767.8 nT
       # NED: [X, Y, Z] -> ENU: [Y, X, -Z]
-      reference_field: [0.07857, 0.41316, -0.90726] # [normalized]
+      reference_field: [3.9634e-06, 2.08423e-05, -4.57678e-05] # [T]
       diagnostic_timeout_sec: 1.0 # [s]
       robust_kernel: "None"
       robust_k: 1.345
 
     ahrs:
       enable_ahrs: true
-      enable_ahrs_init_only: false
+      enable_ahrs_init_only: true
+      constrain_yaw_only: true # Constrain yaw only (roll/pitch left to IMU preintegration)
       use_parameter_frame: false
       use_parameter_tf: false
       parameter_tf: # Relative to the target frame.
-        position: [0.27161, -0.10886, -0.01984] # [x, y, z]
-        orientation: [1.0, 0.0, 0.0, 0.0] # [qx, qy, qz, qw]
+        position: [0.0, 0.0, 0.0] # [x, y, z]
+        orientation: [0.0, 0.0, 0.0, 1.0] # [qx, qy, qz, qw]
       covariance_scalar: 1.0 # Applies to both sensor-reported and parameter_covariance values.
       use_parameter_covariance: false
       parameter_covariance:
-        orientation_noise_sigmas: [0.00349, 0.00349, 0.01745] # [rad] AHRS orientation uncertainty sigmas [roll, pitch, yaw].
+        # SBG Ellipse-N AHRS: 0.4° roll/pitch, 1.0° magnetic heading (typical dynamics).
+        # https://support.sbg-systems.com/sc/el/latest/ellipse-documentation/performance-specifications
+        orientation_noise_sigmas: [0.00698, 0.00698, 0.01745] # [roll, pitch, yaw] [rad] AHRS orientation uncertainty sigmas.
+      # East-positive declination (NOAA convention).
       # https://www.ngdc.noaa.gov/geomag/calculators/magcalc.shtml#declination
-      mag_declination_radians: 0.0
+      mag_declination_radians: 0.0 # [rad]
       diagnostic_timeout_sec: 1.0 # [s]
       robust_kernel: "None"
       robust_k: 1.345
@@ -168,9 +192,11 @@
       covariance_scalar: 1.0 # Applies to both sensor-reported and parameter_covariance values.
       use_parameter_covariance: false
       parameter_covariance:
+        # Water Linked DVL A50: ±1.01% long-term velocity accuracy (~0.01 m/s at 1 m/s).
+        # https://waterlinked.com/dvl-a50
         velocity_noise_sigmas: [0.02, 0.02, 0.02] # [m/s] DVL body-velocity uncertainty sigmas.
       diagnostic_timeout_sec: 0.25 # [s]
-      robust_kernel: "None"
+      robust_kernel: "Huber"
       robust_k: 1.345
 
     const_vel:
@@ -178,6 +204,8 @@
       enable_const_vel_dropout_only: false
       covariance_scalar: 1.0 # Scales the prediction noise sigmas.
       prediction_noise_sigmas: [0.001, 0.001, 0.001] # [m/s/sqrt(s)] Velocity prediction uncertainty sigmas.
+      robust_kernel: "None"
+      robust_k: 1.345
 
     dynamics:
       enable_dynamics: false
@@ -185,10 +213,10 @@
       use_parameter_frame: false
       use_parameter_tf: false
       parameter_tf: # Relative to the target frame.
-        position: [0.27161, -0.10886, -0.01984] # [x, y, z]
-        orientation: [1.0, 0.0, 0.0, 0.0] # [qx, qy, qz, qw]
+        position: [0.0, 0.0, 0.0] # [x, y, z]
+        orientation: [0.0, 0.0, 0.0, 1.0] # [qx, qy, qz, qw]
       covariance_scalar: 1.0 # Scales the prediction noise sigmas.
-      prediction_noise_sigmas: [0.1, 0.1, 0.1] # Model prediction uncertainty sigmas.
+      prediction_noise_sigmas: [0.1, 0.1, 0.1] # [m/s/sqrt(s)] Model prediction uncertainty sigmas.
       mass: [31.87, 60.46, 60.46] # [kg] Mass of the AUV (diagonal)
       linear_drag: [1.59, 3.02, 3.02] # Linear drag coefficient (diagonal)
       quad_drag: [6.11, 196.13, 196.13] # Quadratic drag coefficient (diagonal)
@@ -196,30 +224,76 @@
       robust_kernel: "None"
       robust_k: 1.345
 
+    multiagent:
+      enable_multiagent: false
+      use_parameter_frame: false
+      use_parameter_tf: false
+      parameter_tf: # Relative to the target frame.
+        position: [0.0, 0.0, 0.0] # [x, y, z]
+        orientation: [0.0, 0.0, 0.0, 1.0] # [qx, qy, qz, qw]
+      covariance_scalar: 1.0 # Scales the bearing and range noise sigmas.
+      # Blueprint Subsea SeaTrac X150 USBL: ±1° angular accuracy (typ. 2% of acoustic range).
+      # https://www.blueprintsubsea.com/seatrac/seatrac-standard
+      bearing_noise_sigmas: [0.01745, 0.01745] # [azimuth, elevation] [rad] Bearing uncertainty sigmas.
+      # Blueprint Subsea SeaTrac X150 USBL: ±0.1 m range accuracy (dependent on VOS accuracy).
+      # https://www.blueprintsubsea.com/seatrac/seatrac-standard
+      range_noise_sigma: 0.1 # [m] Two-way time-of-flight range uncertainty sigma.
+      neighbor:
+        modem_tf: # Relative to the neighboring agent's base frame.
+          position: [0.3785, 0.0, -0.0985] # [x, y, z]
+          orientation: [0.0, 0.0, 0.0, 1.0] # [qx, qy, qz, qw]
+        ahrs: # Transformed into the neighboring agent's base frame.
+          enable_ahrs: true
+          covariance_scalar: 1.0 # Scales the orientation noise sigmas.
+          # SBG Ellipse-N AHRS: 0.4° roll/pitch, 1.0° magnetic heading (typical dynamics).
+          # https://support.sbg-systems.com/sc/el/latest/ellipse-documentation/performance-specifications
+          orientation_noise_sigmas: [0.00698, 0.00698, 0.01745] # [roll, pitch, yaw] [rad] AHRS orientation uncertainty sigmas.
+          # East-positive declination (NOAA convention).
+          # https://www.ngdc.noaa.gov/geomag/calculators/magcalc.shtml#declination
+          mag_declination_radians: 0.0 # [rad]
+          robust_kernel: "None"
+          robust_k: 1.345
+        depth: # Transformed into the neighboring agent's base frame.
+          enable_depth: true
+          covariance_scalar: 1.0 # Scales the position z noise sigma.
+          # TE MS5837-02BA (Bar02, "shallow" sensor): ±2 mbar (~2 cm H2O) accuracy over 0-60 °C.
+          # https://www.te.com/en/product-CAT-BLPS0059.html
+          position_z_noise_sigma: 0.02 # [m] Depth sensor Z-position uncertainty sigma.
+          robust_kernel: "None"
+          robust_k: 1.345
+      diagnostic_timeout_sec: 1.0 # [s]
+      robust_kernel: "None"
+      robust_k: 1.345
+
     # --- Initial State Priors ---
-    prior:
+    priors:
       initialization_duration_sec: 5.0 # [s] Time duration to collect and average data before initializing.
 
       # If true, forces the initial state to be set by the values below.
-      # The parameter priors should be set at the base frame with respect to the map frame.
-      use_parameter_priors: true
+      use_parameter_priors: false
       parameter_priors:
-        initial_position: [0.0, 0.0, 0.0] # [m]
-        initial_orientation: [0.0, 0.0, 0.0] # [rad]
-        initial_velocity: [0.0, 0.0, 0.0] # [m/s] (at target frame)
-        initial_accel_bias: [0.0, 0.0, 0.0] # [m/s^2]
-        initial_gyro_bias: [0.0, 0.0, 0.0] # [rad/s]
-        initial_position_sigmas: [0.001, 0.001, 0.001] # [m] Initial position uncertainty.
-        initial_orientation_sigmas: [0.001, 0.001, 0.001] # [rad] Initial yaw uncertainty.
-        initial_velocity_sigmas: [0.001, 0.001, 0.001] # [m/s] Initial velocity uncertainty.
-      initial_accel_bias_sigmas: [0.01, 0.01, 0.01] # [m/s^2] Initial accelerometer bias uncertainty.
-      initial_gyro_bias_sigmas: [0.001, 0.001, 0.001] # [rad/s] Initial gyroscope bias uncertainty.
+        initial_position: [0.0, 0.0, 0.0] # [m] (of the base frame in the map frame)
+        initial_orientation: [0.0, 0.0, 0.0] # [roll, pitch, yaw] [rad] (of the base frame in the map frame)
+        initial_velocity: [0.0, 0.0, 0.0] # [m/s] (in the base frame)
+      initial_accel_bias: [0.0, 0.0, 0.0] # [m/s^2] (in the IMU frame)
+      initial_gyro_bias: [0.0, 0.0, 0.0] # [rad/s] (in the IMU frame)
+      hard_iron_bias: [0.0, 0.0, 0.0] # [T] (in the sensor frame)
+
+      initial_position_sigmas: [0.001, 0.001, 0.001] # [m] (in the map frame)
+      initial_orientation_sigmas: [0.001, 0.001, 0.001] # [roll, pitch, yaw] [rad] (in the map frame)
+      initial_velocity_sigmas: [0.001, 0.001, 0.001] # [m/s] (in the base frame)
+      initial_accel_bias_sigmas: [0.01, 0.01, 0.01] # [m/s^2] (in the IMU frame)
+      # IMPORTANT! The gravity-aligned component is unobservable with AHRS/mag/GPS off, so this bounds heading drift.
+      # max(ARW / √T, B); T = initialization_duration_sec.
+      initial_gyro_bias_sigmas: [3.4e-5, 3.4e-5, 3.4e-5] # [rad/s] (in the IMU frame)
+      # SBG Ellipse magnetometer: hard-iron offset is ~20% of the local field magnitude.
+      hard_iron_bias_sigmas: [1.0e-05, 1.0e-05, 1.0e-05] # [T] (in the sensor frame)
 
     # --- Comparison Methods ---
     comparison:
-      # TURTLMap-based loosely-coupled DVL preintegration implementation
+      # TURTLMap-inspired loosely-coupled DVL preintegration implementation
       enable_loose_dvl_preintegration: false
-      # AQUA-SLAM-based tightly-coupled DVL preintegration implementation
+      # Thoms et al., IEEE JOE 2023 style tightly-coupled DVL preintegration implementation
       enable_tight_dvl_preintegration: false
 
   dvl_a50_twist_node:
@@ -229,17 +303,19 @@
       diagnostic_timeout_sec: 0.5 # [s]
 
       simulate_dropout: false
-      dropout_frequency_hz: 0.033 # [Hz] Frequency of the dropout cycle (1/30).
+      dropout_frequency_hz: 0.033 # [Hz] Frequency of the dropout cycle.
       dropout_duration_sec: 5.0 # [s] Duration of the dropout.
 
-      fom_valid_threshold: 0.02 # Below this is considered a valid velocity measurement.
+      fom_valid_threshold: 0.01 # [m/s] FOM below this is accepted even if the DVL flags the velocity invalid.
       # TURTLMap-based FOM covariance calculation
       use_fom_covariance: false
-      fom_covariance_scale: 4.0
+      fom_covariance_scale: 4.0 # Scales the FOM into a velocity variance.
+
+      override_timestamp: false # Restamp with ROS receive time if the A50 clock isn't synced.
 
       # --- ROS Topics and Frames ---
       input_topic: "dvl/data"
-      output_topic: "dvl/twist_fgo"
+      output_topic: "dvl/twist"
 
       use_parameter_frame: false
 
@@ -249,9 +325,15 @@
       publish_diagnostics: true # Publish diagnostic information.
       diagnostic_timeout_sec: 0.5 # [s]
 
+      override_timestamp: false # Restamp with ROS receive time if the A50 clock isn't synced.
+
+      # Water Linked DVL A50 dead reckoning: 0.1-0.3°/min calibrated yaw drift; no published roll/pitch spec (~1° estimated).
+      # https://docs.waterlinked.com/dvl/dead-reckoning/
+      orientation_noise_sigmas: [0.01745, 0.01745, 0.03491] # [roll, pitch, yaw] [rad] Orientation uncertainty sigmas.
+
       # --- ROS Topics and Frames ---
       input_topic: "dvl/position"
-      output_topic: "odometry/dvl_ned"
+      output_topic: "dvl/odometry_ned"
 
       use_parameter_frame: false
 
@@ -261,17 +343,19 @@
       publish_diagnostics: true # Publish diagnostic information.
       diagnostic_timeout_sec: 0.5 # [s]
 
-      pressure_scale: 1.0
-      atmospheric_pressure: 86039.8 # [Pa] Utah Lake (~1358 m elevation)
+      pressure_scale: 1.0 # Scale factor to convert the input reading to Pascals.
+      atmospheric_pressure: 101325.0 # [Pa]
       water_density: 997.0 # [kg/m^3]
       gravity: 9.81 # [m/s^2]
 
-      fallback_depth_noise_sigma: 0.02 # [m]
-      max_pressure_delta: 9780.0 # [Pa] ~1 m depth jump
+      max_pressure_delta: 0.0 # [Pa] Reject larger jumps as spikes. 0.0 disables rejection.
+      max_consecutive_rejections: 5 # Accept the new pressure after this many rejections in a row.
 
       # --- ROS Topics and Frames ---
-      input_topic: "shallow/pressure/data"
-      output_topic: "odometry/depth"
+      input_topic: "pressure/data"
+      output_topic: "depth/odometry"
+
+      calibrate_service: "depth/calibrate" # Sets depth zero ref to the current pressure.
 
       use_parameter_child_frame: false
 
@@ -281,20 +365,32 @@
       publish_diagnostics: true # Publish diagnostic information.
       diagnostic_timeout_sec: 1.0 # [s]
 
+      position_covariance_threshold: 0.0 # [m^2] Max horizontal variance to publish odom. 0.0 disables.
+
       set_origin: false # Whether this node owns and publishes the ENU origin.
       origin_pub_rate_hz: 1.0 # [Hz] Rate to republish the origin.
 
-      use_parameter_origin: false
+      use_parameter_origin: false # Only used if set_origin is true.
       origin_latitude: 40.33940 # [deg]
       origin_longitude: -111.90721 # [deg]
       origin_altitude: 1412.0 # [m]
 
       # --- ROS Topics and Frames ---
       input_topic: "imu/nav_sat_fix"
-      output_topic: "odometry/gps"
+      output_topic: "gps/odometry"
       origin_topic: "/origin"
 
       use_parameter_child_frame: true
+
+  sbg_imu_mag_node:
+    ros__parameters:
+      # --- Node Settings ---
+      # IMPORTANT! This must match the magnitude of factor_graph_node's mag reference_field.
+      au_to_tesla: 5.0446e-05
+
+      # --- ROS Topics ---
+      input_topic: "imu/mag_au"
+      output_topic: "imu/mag"
 
   seatrac_x150_imu_node:
     ros__parameters:
@@ -302,12 +398,15 @@
       publish_diagnostics: true # Publish diagnostic information.
       diagnostic_timeout_sec: 0.5 # [s]
 
-      accel_noise_sigmas: [0.0078, 0.0078, 0.0078] # [m/s^2] Accelerometer measurement noise sigmas.
-      gyro_noise_sigmas: [0.0012, 0.0012, 0.0012] # [rad/s] Gyroscope measurement noise sigmas.
-      orientation_noise_sigmas: [0.00349, 0.00349, 0.01745] # [rad] Orientation uncertainty sigmas [roll, pitch, yaw].
-      magnetic_field_noise_sigmas: [0.003, 0.003, 0.003] # [normalized] Magnetic field uncertainty sigmas.
+      # Blueprint Subsea SeaTrac X150 AHRS: ±0.2° pitch/roll, ±1.0° yaw standard deviation.
+      # https://www.blueprintsubsea.com/seatrac/seatrac-standard
+      orientation_noise_sigmas: [0.00349, 0.00349, 0.01745] # [roll, pitch, yaw] [rad] Orientation uncertainty sigmas.
+      # No published SeaTrac spec; matches the SBG Ellipse magnetometer (3 mGauss RMS noise / ~0.504 Gauss local field -> ~0.006).
+      # https://support.sbg-systems.com/sc/el/latest/ellipse-documentation/hardware-documentation/aiding-sensors
+      magnetic_field_noise_sigmas: [0.006, 0.006, 0.006] # [normalized] Magnetic field uncertainty sigmas.
+      # East-positive declination (NOAA convention).
       # https://www.ngdc.noaa.gov/geomag/calculators/magcalc.shtml#declination
-      mag_declination_radians: 0.0
+      mag_declination_radians: 0.0 # [rad]
 
       # --- ROS Topics and Frames ---
       input_topic: "modem_status"
@@ -328,16 +427,16 @@
 
   odom_ned_to_enu_node:
     ros__parameters:
-      input_topic: "odometry/dvl_ned"
-      output_topic: "odometry/dvl"
+      input_topic: "dvl/odometry_ned"
+      output_topic: "dvl/odometry"
 
   odom_to_tf_node:
     ros__parameters:
-      input_topic: "odometry/dvl"
+      input_topic: "dvl/odometry"
 
   gps_to_truth_relay:
     ros__parameters:
-      input_topic: "odometry/gps"
+      input_topic: "gps/odometry"
       output_topic: "odometry/truth"
 
   # --- Robot Localization Pipeline ---
@@ -357,13 +456,14 @@
       twist0_queue_size: 5
 
       imu0: "imu/data"
-      # IMPORTANT! Acceleration fusion is disabled, robot_localization in ROS 2 Jazzy has a known
-      # bug with mishandling gravity removal for non-trivial IMU to base transformations.
+      # IMPORTANT! robot_localization in ROS 2 Jazzy has a known bug with mishandling gravity
+      # removal for non-trivial IMU to base rotations. Disable acceleration fusion in the
+      # agent-specific config file if the rotation is non-trivial.
       imu0_config: [false, false, false, # X, Y, Z
                     false, false, false, # Roll, Pitch, Yaw
                     false, false, false, # Vx, Vy, Vz
                     true,  true,  true,  # Vroll, Vpitch, Vyaw
-                    false, false, false] # Ax, Ay, Az
+                    true,  true,  true]  # Ax, Ay, Az
       imu0_queue_size: 15
       imu0_differential: false
       imu0_relative: false
@@ -388,7 +488,7 @@
       odom0_differential: false
       odom0_relative: false
 
-      odom1: "odometry/depth"
+      odom1: "depth/odometry"
       odom1_config: [false, false, true,  # X, Y, Z
                       false, false, false, # Roll, Pitch, Yaw
                       false, false, false, # Vx, Vy, Vz
@@ -398,7 +498,7 @@
       odom1_differential: false
       odom1_relative: false # Absolute depth in the map frame.
 
-      odom2: "odometry/gps_null"
+      odom2: "gps/odometry"
       odom2_config: [true,  true,  false, # X, Y, Z
                       false, false, false, # Roll, Pitch, Yaw
                       false, false, false, # Vx, Vy, Vz
@@ -435,7 +535,7 @@
       odom0_differential: false
       odom0_relative: false
 
-      odom1: "odometry/depth"
+      odom1: "depth/odometry"
       odom1_config: [false, false, true,  # X, Y, Z
                       false, false, false, # Roll, Pitch, Yaw
                       false, false, false, # Vx, Vy, Vz
@@ -445,7 +545,7 @@
       odom1_differential: false
       odom1_relative: false # Absolute depth in the map frame.
 
-      odom2: "odometry/gps_null"
+      odom2: "gps/odometry"
       odom2_config: [true,  true,  false, # X, Y, Z
                       false, false, false, # Roll, Pitch, Yaw
                       false, false, false, # Vx, Vy, Vz
@@ -464,4 +564,3 @@
       imu0_queue_size: 15
       imu0_differential: false
       imu0_relative: false # Absolute orientation in the map frame.
-
