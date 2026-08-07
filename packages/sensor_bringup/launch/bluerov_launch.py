@@ -143,20 +143,22 @@ def generate_launch_description():
         #     namespace=namespace,
         #     remappings=[('odometry/filtered', 'odometry/global')]    
         # ),
-        GroupAction(
-            actions=[
-                PushRosNamespace(namespace),
-                IncludeLaunchDescription(
-                    PythonLaunchDescriptionSource(
-                        os.path.join(coug_fgo_launch_dir, "blue_fgo.launch.py")
-                    ),
-                    launch_arguments={
-                        "use_sim_time": sim,
-                        "auv_ns": namespace,
-                    }.items(),
-                ),
-            ]
-        ),
+        # Launched separately now:
+        #   ros2 launch sensor_bringup blue_fgo.launch.py
+        # GroupAction(
+        #     actions=[
+        #         PushRosNamespace(namespace),
+        #         IncludeLaunchDescription(
+        #             PythonLaunchDescriptionSource(
+        #                 os.path.join(coug_fgo_launch_dir, "blue_fgo.launch.py")
+        #             ),
+        #             launch_arguments={
+        #                 "use_sim_time": sim,
+        #                 "auv_ns": namespace,
+        #             }.items(),
+        #         ),
+        #     ]
+        # ),
 
         # launch_ros.actions.Node(
         #     package='seatrac',

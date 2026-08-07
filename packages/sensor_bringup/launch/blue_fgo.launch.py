@@ -147,6 +147,7 @@ def generate_launch_description() -> LaunchDescription:
                 package="coug_fgo",
                 executable="factor_graph",
                 name="factor_graph_node",
+                namespace=auv_ns,
                 parameters=[
                     fleet_params,
                     # auv_params,
@@ -304,20 +305,21 @@ def generate_launch_description() -> LaunchDescription:
             #         },
             #     ],
             # ),
-            Node(
-                package="coug_fgo",
-                executable="navsat_odom",
-                name="navsat_odom_node",
-                parameters=[
-                    fleet_params,
-                    # auv_params,
-                    {
-                        "use_sim_time": use_sim_time,
-                        "map_frame": "map",
-                        "parameter_child_frame": gps_link_frame,
-                    },
-                ],
-            ),
+            # Node(
+            #     package="coug_fgo",
+            #     executable="navsat_odom",
+            #     name="navsat_odom_node",
+            #     namespace=auv_ns,
+            #     parameters=[
+            #         fleet_params,
+            #         # auv_params,
+            #         {
+            #             "use_sim_time": use_sim_time,
+            #             "map_frame": "map",
+            #             "parameter_child_frame": gps_link_frame,
+            #         },
+            #     ],
+            # ),
             # Node(
             #     package="coug_fgo",
             #     executable="sbg_imu_mag",
@@ -398,6 +400,7 @@ def generate_launch_description() -> LaunchDescription:
                 package="robot_localization",
                 executable="ekf_node",
                 name="ekf_filter_node_odom",
+                namespace=auv_ns,
                 parameters=[
                     fleet_params,
                     # auv_params,
