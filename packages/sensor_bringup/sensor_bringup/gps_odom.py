@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# TODO make this a node that can be shared by others
 
 import rclpy
 from rclpy.node import Node
@@ -64,9 +65,10 @@ class NavSatFixToOdom(Node):
         # self.min_sats = 5  # Minimum number of satellites
 
         # Publisher for Odometry
-        self.publisher = self.create_publisher(Odometry, 'gps/odom', 10)
+        # TODO parametertize this topic
+        self.publisher = self.create_publisher(Odometry, 'gps/odometry', 10)
         '''
-        Publisher for the "gps_odom" topic with the message type Odometry.
+        Publisher for the "gps/odometry" topic with the message type Odometry.
         '''
         # Set the origin from the mission file path
         # self.set_origin()
