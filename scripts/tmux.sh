@@ -45,7 +45,7 @@ tmux send-keys -t ${SESSION_NAME}:0.2 \
 tmux send-keys -t ${SESSION_NAME}:0.2 \
   "clear" C-m
 tmux send-keys -t ${SESSION_NAME}:0.2 \
-  "ros2 launch blueprint_oculus_sonar_driver oculus_driver.launch.py namespace:=bluerov2 params_file:=/home/frostlab/config/oculus_driver.yaml"
+  "ros2 launch sensor_bringup oculus_driver_launch.py"
 
 # Right pane
 tmux send-keys -t ${SESSION_NAME}:0.3 \

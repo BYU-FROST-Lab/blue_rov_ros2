@@ -13,6 +13,7 @@ def generate_launch_description():
             executable='usb_cam_node_exe',
             name='stellarhd',
             parameters=[config],
+            namespace='bluerov2',
             output='screen',
         ),
     ])
