@@ -1,4 +1,13 @@
 services:
+  mapproxy:
+    image: danielsnider/mapproxy
+    container_name: mapproxy-ct
+    network_mode: host
+    volumes:
+      # - ../.mapproxy:/mapproxy # For storage in this repo
+      - ~/mapproxy:/mapproxy    # For shared storage in the home directory
+    restart: unless-stopped
+  
   bluerov_base:
     build:
       context: .

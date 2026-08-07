@@ -46,6 +46,23 @@ colcon test --packages-select sensor_bringup
 colcon test-result --verbose
 ```
 
+### Offline map tiles
+
+Mapviz gets its basemap from the `mapproxy-ct` container (`docker/base_station/docker-compose.yaml`),
+which caches tiles into `~/mapproxy/cache_data` on the host. To pre-download tiles for a
+site before losing internet:
+
+```bash
+# List sites from config/mapviz_origins.yaml
+./base_scripts/seed_mapproxy.py --list
+
+# Interactive pick, 2 km box, zoom 10-19
+./base_scripts/seed_mapproxy.py
+
+# One site, 4 km box; --all does every origin; -n previews without downloading
+./base_scripts/seed_mapproxy.py kahana --size 4000
+```
+
 ## Docker
 
 ```bash
