@@ -81,6 +81,19 @@ fi
 : "${TOPICS:?Missing TOPICS after preset resolution}"
 
 # --------------------------------------------------
+# Build the exclude argument
+# `ros2 bag record -x` takes a single regex, so OR the list together.
+# --------------------------------------------------
+EXCLUDE_ARG=""
+if [ -n "${EXCLUDE_TOPICS// /}" ]; then
+  EXCLUDE_REGEX=""
+  for t in ${EXCLUDE_TOPICS}; do
+    EXCLUDE_REGEX="${EXCLUDE_REGEX:+${EXCLUDE_REGEX}|}${t}"
+  done
+  EXCLUDE_ARG="-x \"${EXCLUDE_REGEX}\""
+fi
+
+# --------------------------------------------------
 # Resolve bag name
 # --------------------------------------------------
 if [ -n "${CUSTOM_BAG_NAME}" ]; then
@@ -113,6 +126,7 @@ echo "  Duration   : ${DURATION}s"
 echo "  Cache      : ${MAX_CACHE_SIZE} bytes"
 echo "  Wait       : ${WAIT_BEFORE_START}s"
 echo "  Topics     : ${TOPICS}"
+echo "  Excluding  : ${EXCLUDE_REGEX:-<none>}"
 echo ""
 
 # --------------------------------------------------
@@ -139,6 +153,7 @@ docker exec -it "${CONTAINER}" bash -c "
     ${DURATION:+-d ${DURATION}} \
     -o '${BAG_DIR}' \
     --qos-profile-overrides-path ~/config/qos_record.yaml \
+    ${EXCLUDE_ARG} \
     ${TOPICS}
 "
 

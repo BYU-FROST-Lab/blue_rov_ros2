@@ -23,11 +23,25 @@ DURATION=120
 MAX_CACHE_SIZE=200000000
 
 # -----------------------------
+# Excluded topics
+# -----------------------------
+# Whitespace-separated list of topics to never record. Applies to every preset.
+# Each entry is a regex fragment matched anywhere in the topic name (so a
+# partial name is enough, and no wildcards are needed). record.sh joins these
+# into the single regex that `ros2 bag record -x` accepts.
+EXCLUDE_TOPICS=" \
+/bluerov2/image_raw/compressed \
+/bluerov2/image_raw/compressedDepth \
+/bluerov2/image_raw/theora \
+/bluerov2/oculus_debug \
+"
+
+# -----------------------------
 # Topic presets
 # -----------------------------
 TOPICS_ALL="-a"
 
-TOPICS_DEBUG="-a -x /bluerov2/oculus_debug*"
+TOPICS_DEBUG="-a"
 
 TOPICS_REQ="/imu/data /imu/mag /dvl/twist /dvl/data /dvl/position /deep/depth_data /deep/pressure/data /shallow/pressure/data /shallow/depth_data /imu/nav_sat_fix /tf /tf_static"
 
