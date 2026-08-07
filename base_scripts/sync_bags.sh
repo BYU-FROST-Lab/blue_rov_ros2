@@ -2,6 +2,9 @@
 
 # TODO setup parameters for the base scripts for directories and such
 # TODO setup for use with docker containers
+ 
+# Change directory to script's location
+cd "$(dirname "$0")" 
 
 IP_ADDRESS="192.168.2.103"
 FOLDER=""
@@ -29,7 +32,7 @@ echo "Using IP address: $IP_ADDRESS"
 # Variables
 REMOTE_USER="pi5"
 REMOTE_FOLDER="/home/pi5/blue_rov_ros2/bags"
-LOCAL_FOLDER="$HOME/blue_rov_ros2/bags/$FOLDER"
+LOCAL_FOLDER="../bags/$FOLDER"
 
 # TODO add a setup ssh script to setup ssh keys
 
