@@ -102,7 +102,7 @@
 
     gps:
       enable_gps: true
-      enable_gps_init_only: false
+      enable_gps_init_priors: true
       use_parameter_frame: false
       use_parameter_tf: false
       parameter_tf: # Relative to the target frame.
@@ -120,7 +120,7 @@
 
     depth:
       enable_depth: true
-      enable_depth_init_only: false
+      enable_depth_init_priors: true
       use_parameter_frame: false
       use_parameter_tf: false
       parameter_tf: # Relative to the target frame.
@@ -161,7 +161,7 @@
 
     ahrs:
       enable_ahrs: true
-      enable_ahrs_init_only: true
+      enable_ahrs_init_priors: true
       constrain_yaw_only: true # Constrain yaw only (roll/pitch left to IMU preintegration)
       use_parameter_frame: false
       use_parameter_tf: false
@@ -183,7 +183,8 @@
 
     dvl:
       enable_dvl: true
-      enable_dvl_init_only: false
+      # THIS SETTING CONTROLS WHETHER THE GRAPH CAN INITIALIZE W/O DVL
+      enable_dvl_init_priors: false
       use_parameter_frame: false
       use_parameter_tf: false
       parameter_tf: # Relative to the target frame.
@@ -267,24 +268,29 @@
 
     # --- Initial State Priors ---
     priors:
-      initialization_duration_sec: 5.0 # [s] Time duration to collect and average data before initializing.
-
       # If true, forces the initial state to be set by the values below.
+      # Also overrides use_parameter_priors_covariance to set it to true.
       use_parameter_priors: false
       parameter_priors:
         initial_position: [0.0, 0.0, 0.0] # [m] (of the base frame in the map frame)
         initial_orientation: [0.0, 0.0, 0.0] # [roll, pitch, yaw] [rad] (of the base frame in the map frame)
         initial_velocity: [0.0, 0.0, 0.0] # [m/s] (in the base frame)
+
       initial_accel_bias: [0.0, 0.0, 0.0] # [m/s^2] (in the IMU frame)
       initial_gyro_bias: [0.0, 0.0, 0.0] # [rad/s] (in the IMU frame)
       hard_iron_bias: [0.0, 0.0, 0.0] # [T] (in the sensor frame)
 
-      initial_position_sigmas: [0.001, 0.001, 0.001] # [m] (in the map frame)
-      initial_orientation_sigmas: [0.001, 0.001, 0.001] # [roll, pitch, yaw] [rad] (in the map frame)
-      initial_velocity_sigmas: [0.001, 0.001, 0.001] # [m/s] (in the base frame)
+      # If true, forces the initial state covariance to be set by the values below.
+      use_parameter_priors_covariance: false
+      parameter_priors_covariance:
+        initial_position_sigmas: [0.001, 0.001, 0.001] # [m] (in the map frame)
+        initial_orientation_sigmas: [0.001, 0.001, 0.001] # [roll, pitch, yaw] [rad] (in the map frame)
+        initial_velocity_sigmas: [0.001, 0.001, 0.001] # [m/s] (in the base frame)
+
       initial_accel_bias_sigmas: [0.01, 0.01, 0.01] # [m/s^2] (in the IMU frame)
       # IMPORTANT! The gravity-aligned component is unobservable with AHRS/mag/GPS off, so this bounds heading drift.
-      # max(ARW / √T, B); T = initialization_duration_sec.
+      # SBG Ellipse-N: 7 °/h in-run gyro bias instability.
+      # https://support.sbg-systems.com/sc/el/latest/ellipse-documentation/performance-specifications
       initial_gyro_bias_sigmas: [3.4e-5, 3.4e-5, 3.4e-5] # [rad/s] (in the IMU frame)
       # SBG Ellipse magnetometer: hard-iron offset is ~20% of the local field magnitude.
       hard_iron_bias_sigmas: [1.0e-05, 1.0e-05, 1.0e-05] # [T] (in the sensor frame)
