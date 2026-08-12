@@ -80,17 +80,20 @@ fi
 
 : "${TOPICS:?Missing TOPICS after preset resolution}"
 
-# --------------------------------------------------
-# Build the exclude argument
-# `ros2 bag record -x` takes a single regex, so OR the list together.
-# --------------------------------------------------
+
 EXCLUDE_ARG=""
-if [ -n "${EXCLUDE_TOPICS// /}" ]; then
-  EXCLUDE_REGEX=""
-  for t in ${EXCLUDE_TOPICS}; do
-    EXCLUDE_REGEX="${EXCLUDE_REGEX:+${EXCLUDE_REGEX}|}${t}"
-  done
-  EXCLUDE_ARG="-x \"${EXCLUDE_REGEX}\""
+# (delete the two debug echo lines)
+
+if [ "${PRESET_NAME}" = "" ]; then
+  if [ -n "${ALL_EXCLUDE_TOPICS// /}" ]; then      # <- was EXCLUDE_TOPICS
+    EXCLUDE_REGEX=""
+    for t in ${ALL_EXCLUDE_TOPICS}; do             # <- was EXCLUDE_TOPICS
+      EXCLUDE_REGEX="${EXCLUDE_REGEX:+${EXCLUDE_REGEX}|}${t}"
+    done
+    EXCLUDE_ARG="-x \"${EXCLUDE_REGEX}\""
+  fi
+else
+  EXCLUDE_ARG=""
 fi
 
 # --------------------------------------------------

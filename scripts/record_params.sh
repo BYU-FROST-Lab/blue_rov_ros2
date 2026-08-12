@@ -29,7 +29,8 @@ MAX_CACHE_SIZE=200000000
 # Each entry is a regex fragment matched anywhere in the topic name (so a
 # partial name is enough, and no wildcards are needed). record.sh joins these
 # into the single regex that `ros2 bag record -x` accepts.
-EXCLUDE_TOPICS=" \
+ALL_EXCLUDE_TOPICS=" \
+/bluerov2/image_raw \
 /bluerov2/image_raw/compressed \
 /bluerov2/image_raw/compressedDepth \
 /bluerov2/image_raw/theora \
@@ -73,6 +74,12 @@ TOPICS_IMU=" \
 /bluerov2/imu/mag \
 /bluerov2/sbg/mag \
 "
+
+TOPICS_RAW=" \
+/bluerov2/image_raw
+"
+
+TOPICS_COM=" /bluerov2/image_raw/compressed"
 
 # -----------------------------
 # Default topics (used if no -p or -t)

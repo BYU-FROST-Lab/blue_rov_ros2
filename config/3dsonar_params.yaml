@@ -1,7 +1,8 @@
 /**:
   ros__parameters:
-    IP: 192.168.194.96
+    IP: 192.168.2.96
     speed_of_sound: 1491
+    set_acoustics: false
     enable_acoustics: false
     frame_id: sonar_frame
     sample_frequency: 100.0

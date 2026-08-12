@@ -47,13 +47,33 @@ tmux send-keys -t ${SESSION_NAME}:0.2 \
 tmux send-keys -t ${SESSION_NAME}:0.2 \
   "ros2 launch sensor_bringup oculus_driver_launch.py"
 
-# Right pane
+# Right pane (top-right)
 tmux send-keys -t ${SESSION_NAME}:0.3 \
   "docker exec -it ${CONTAINER} bash" C-m
 tmux send-keys -t ${SESSION_NAME}:0.3 \
   "clear" C-m
 tmux send-keys -t ${SESSION_NAME}:0.3 \
   "ros2 topic list" 
+
+# Split right pane into three stacked panes (top-right, mid-right, bottom-right)
+tmux split-window -v -t ${SESSION_NAME}:0.3
+tmux split-window -v -t ${SESSION_NAME}:0.4
+
+# mid-right pane
+tmux send-keys -t ${SESSION_NAME}:0.4 \
+  "docker exec -it ${CONTAINER} bash" C-m
+tmux send-keys -t ${SESSION_NAME}:0.4 \
+  "clear" C-m
+tmux send-keys -t ${SESSION_NAME}:0.4 \
+  "ros2 launch sensor_bringup blue_fgo.launch.py"
+
+# bottom-right pane
+tmux send-keys -t ${SESSION_NAME}:0.5 \
+  "docker exec -it ${CONTAINER} bash" C-m
+tmux send-keys -t ${SESSION_NAME}:0.5 \
+  "clear" C-m
+tmux send-keys -t ${SESSION_NAME}:0.5 \
+  "ros2 launch sensor_bringup stellar_launch.py"
 
 ########################
 # Window 1: empty
@@ -71,7 +91,7 @@ tmux send-keys -t ${SESSION_NAME}:record \
 
 tmux split-window -h -t ${SESSION_NAME}:record
 tmux send-keys -t ${SESSION_NAME}:record.1 \
-  "bash scripts/record.sh -p sbg"
+  "bash scripts/record.sh -p com"
 
 
 # Select the first window

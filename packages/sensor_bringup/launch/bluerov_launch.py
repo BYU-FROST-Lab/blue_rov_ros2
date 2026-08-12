@@ -160,13 +160,21 @@ def generate_launch_description():
         #     ]
         # ),
 
-        # launch_ros.actions.Node(
-        #     package='seatrac',
-        #     executable='modem_pinger',
-        #     parameters=[param_file],
-        #     namespace=LaunchConfiguration('namespace'),
-        #     output=output,
-        # ),
+        launch_ros.actions.Node(
+            package='cougars_coms',
+            executable='cougars_coms',
+            parameters=[param_file],
+            namespace=LaunchConfiguration('namespace'),
+            output=output,
+        ),
+        # Setup the USBL modem
+        launch_ros.actions.Node(
+            package='seatrac',
+            executable='modem',
+            parameters=[param_file],
+            namespace=LaunchConfiguration('namespace'),
+            output=output,
+        ),
         Node(
             package='sensor_bringup',
             executable='gps_odom',
@@ -182,14 +190,6 @@ def generate_launch_description():
             namespace=LaunchConfiguration('namespace'),
             output=output,
         ),
-        # # Setup the USBL modem
-        # launch_ros.actions.Node(
-        #     package='seatrac',
-        #     executable='modem',
-        #     parameters=[param_file],
-        #     namespace=LaunchConfiguration('namespace'),
-        #     output=output,
-        # ),
 
 
         ################ Pressure sensor #########
