@@ -21,10 +21,16 @@
     #   latitude: 37.119915
     #   longitude: -113.382039
     #   altitude: 927.0
+    # origin:
+    #   latitude: 21.3401568
+    #   longitude: -158.1390210
+    #   altitude: 0.0
+
     origin:
-      latitude: 21.3401568
-      longitude: -158.1390210
+      latitude: 21.4223591
+      longitude: -158.1927043
       altitude: 0.0
+
 
 /**/pressure_pub:
   ros__parameters:

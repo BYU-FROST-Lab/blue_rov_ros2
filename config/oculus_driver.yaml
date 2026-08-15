@@ -6,7 +6,7 @@ bluerov2:
       # 2 = High Frequency (M750d: 1.2 MHz,  range up to  40 m)
       # 1 = Low Frequency  (M1200d: 1.2 MHz, range up to  30 m)
       # 2 = High Frequency (M1200d: 2.1 MHz, range up to  10 m)
-      mode: 2
+      mode: 1
 
       # Maximum ping rate
       # 0 = 10 Hz
@@ -15,10 +15,10 @@ bluerov2:
       # 3 =  5 Hz
       # 4 =  2 Hz
       # 5 = Disabled
-      ping_rate: 3
+      ping_rate: 1
 
       # Range in meters (clamped to hardware limits based on mode)
-      range: 10.0
+      range: 20.0
 
       # Gain percentage (0.0 – 100.0)
       gain: 0.0
@@ -27,7 +27,7 @@ bluerov2:
       speed_of_sound: 0.0
 
       # Water salinity in ppm: 0.0 = freshwater, 35.0 = saltwater
-      salinity: 0.0
+      salinity: 35.0
 
       # Enable sonar automatic gain control (flag bit 0x10 in fire message)
       # When true, 'gain' acts as an intensity demand rather than a fixed gain percent
@@ -53,7 +53,7 @@ bluerov2:
 
       # Brightness multiplier applied to pixel values before publishing (1.0 = no change)
       # Values > 1.0 will clip to 255.
-      gain: 5.0
+      gain: 10.0
 
       # Minimum seconds between publishes; 0.0 = publish every ping
       interval: 0.2

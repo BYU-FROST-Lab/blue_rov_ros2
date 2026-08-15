@@ -65,6 +65,9 @@ RUN apt update && apt install -y \
     ros-${ROS_DISTRO}-diagnostic-aggregator \
     ros-${ROS_DISTRO}-usb-cam \
     ros-${ROS_DISTRO}-generate-parameter-library \
+    ros-${ROS_DISTRO}-gps-msgs \
+    # For building cougars coms
+    libboost-all-dev \
     && rm -rf /var/lib/apt/lists/*
 
 RUN pip install --no-cache-dir \
