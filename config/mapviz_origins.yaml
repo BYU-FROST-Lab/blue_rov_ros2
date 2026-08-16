@@ -48,8 +48,18 @@
   longitude: -157.885222
   altitude: 0.0
   heading: 0.0
-- name: haliewa1
-  latitude: 21.599247
-  longitude: -158.128386
+- name: koolina
+  latitude: 21.3401568
+  longitude: -158.1390210
+  altitude: 0.0
+  heading: 0.0
+- name: ewa
+  latitude: 21.2885273
+  longitude: -157.9841609
+  alitude: 0.0
+  heading: 0.0
+- name: wainae
+  latitude: 21.4223591
+  longitude: -158.1927043
   altitude: 0.0
   heading: 0.0
