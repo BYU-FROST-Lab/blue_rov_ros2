@@ -9,9 +9,9 @@ show_status_bar: true
 show_capture_tools: true
 window_width: 1848
 window_height: 1016
-view_scale: 0.374675423
-offset_x: -264.747528
-offset_y: 118.378883
+view_scale: 2.08316445
+offset_x: -319.836395
+offset_y: -229.74321
 use_latest_transforms: true
 background: "#ffffff"
 image_transport: raw
@@ -82,7 +82,27 @@ displays:
       offset_y: 0
       ratio: original
   - type: mapviz_plugins/odometry
-    name: new display
+    name: GPS
+    config:
+      visible: true
+      collapsed: true
+      topic: /bluerov2/gps/odometry
+      color: "#55007f"
+      draw_style: points
+      position_tolerance: 0
+      buffer_size: 0
+      show_laps: false
+      show_covariance: true
+      show_all_covariances: false
+      static_arrow_sizes: false
+      arrow_size: 25
+      show_timestamps: 0
+      qos_depth: 10
+      qos_history: 1
+      qos_reliability: 1
+      qos_durability: 2
+  - type: mapviz_plugins/odometry
+    name: SBG
     config:
       visible: true
       collapsed: true
@@ -101,6 +121,31 @@ displays:
       qos_history: 1
       qos_reliability: 1
       qos_durability: 2
+  - type: mapviz_plugins/odometry
+    name: FGO
+    config:
+      visible: true
+      collapsed: true
+      topic: /bluerov2/odometry/global
+      color: "#0000ff"
+      draw_style: points
+      position_tolerance: 0
+      buffer_size: 0
+      show_laps: false
+      show_covariance: true
+      show_all_covariances: false
+      static_arrow_sizes: false
+      arrow_size: 25
+      show_timestamps: 0
+      qos_depth: 10
+      qos_history: 1
+      qos_reliability: 1
+      qos_durability: 2
+  - type: cougars_mapviz/cougars_waypoints
+    name: Waypoints
+    config:
+      visible: true
+      collapsed: true
   - type: mapviz_plugins/attitude_indicator
     name: Attitude
     config:
@@ -115,8 +160,3 @@ displays:
       qos_history: 1
       qos_reliability: 1
       qos_durability: 2
-  - type: cougars_mapviz/cougars_waypoints
-    name: Waypoints
-    config:
-      visible: true
-      collapsed: false
