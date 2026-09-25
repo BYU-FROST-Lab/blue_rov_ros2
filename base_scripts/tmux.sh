@@ -36,9 +36,9 @@ tmux send-keys -t ${SESSION_NAME}:0.2 \
   "cd ~/blue_rov_ros2/bags" C-m
 
 tmux send-keys -t ${SESSION_NAME}:0.1 \
-  "ffmpeg -protocol_whitelist file,udp,rtp -analyzeduration 5M -probesize 5M -i ../base_scripts/video/DownCam.sdp -c copy down_$(date +%Y%m%d_%H%M%S).mkv "
+  'ffmpeg -protocol_whitelist file,udp,rtp -analyzeduration 5M -probesize 5M -i ../base_scripts/video/DownCam.sdp -c copy down_$(date +%Y%m%d_%H%M%S).mkv '
 tmux send-keys -t ${SESSION_NAME}:0.2 \
-  "ffmpeg -protocol_whitelist file,udp,rtp -analyzeduration 5M -probesize 5M -i ../base_scripts/video/FrontCam.sdp -c copy front_$(date +%Y%m%d_%H%M%S).mkv "
+  'ffmpeg -protocol_whitelist file,udp,rtp -analyzeduration 5M -probesize 5M -i ../base_scripts/video/FrontCam.sdp -c copy front_$(date +%Y%m%d_%H%M%S).mkv '
 
 
 ########################
