@@ -5,11 +5,11 @@ repositories:
     version: continuous_run
   dvl-a50:
     type: git
-    url: https://github.com/BradenMeyers/dvl-a50.git
+    url: https://github.com/BYU-FRoSt-Lab/dvl-a50.git
     version: master
   dvl-msgs:
     type: git
-    url: https://github.com/BradenMeyers/dvl_msgs.git
+    url: https://github.com/BYU-FROST-Lab/dvl_msgs.git
     version: master
   pressure_sensor_ros2:
     type: git
